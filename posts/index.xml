@@ -1,0 +1,1116 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on Cristopher&#39;s dev blog</title>
+        <link>https://devcbc.github.io/posts/</link>
+        <description>Recent content in Posts on Cristopher&#39;s dev blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+        <lastBuildDate>Wed, 17 Nov 2021 00:00:00 +0000</lastBuildDate>
+        <atom:link href="https://devcbc.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>The Enigma Machine - Part II - Publishing</title>
+            <link>https://devcbc.github.io/posts/2021/11/the-enigma-machine-part-ii-publishing/</link>
+            <pubDate>Wed, 17 Nov 2021 00:00:00 +0000</pubDate>
+            
+            <guid>https://devcbc.github.io/posts/2021/11/the-enigma-machine-part-ii-publishing/</guid>
+            <description>Refreshing the memory In the previous post I focused on the algorithm, but my main goal described in the third paragraph was to release the project as an online simulator! In order to achieve that, I had decided to built it with the fresh Blazor framework, which per Microsoft:
+ &amp;ldquo;&amp;hellip; lets you build interactive web UIs using C# instead of JavaScript.&amp;rdquo;
+ I will not dive into the Blazor framework itself since my focus in this post is on how to publish this type of project as a static website on Github Pages.</description>
+            <content type="html"><![CDATA[<h2 id="refreshing-the-memory">Refreshing the memory</h2>
+<p>In the previous <a href="https://devcbc.github.io/posts/2021/11/the-enigma-machine-part-i-the-algorithm/">post</a> I focused on the algorithm, but my main goal described in the third paragraph was to release the project as an online simulator! In order to achieve that, I had decided to built it with the fresh Blazor framework, which per <a href="https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor">Microsoft</a>:</p>
+<blockquote>
+<p>&ldquo;&hellip; lets you build interactive web UIs using C# instead of JavaScript.&rdquo;</p>
+</blockquote>
+<p>I will not dive into the Blazor framework itself since my focus in this post is on how to publish this type of project as a static website on Github Pages. To cover that, I will detail two aspects that makes it possible:</p>
+<ul>
+<li>The specific files of the application</li>
+<li>The settings</li>
+</ul>
+<p>Before we get going, just keep in mind that the following steps consider a <code>Blazor WebAssembly App</code> project and its structure. Also, I chose to leave its default name, which it is <code>BlazorApp</code>. You can check the repository <a href="https://github.com/devcbc/EnigmaSimulator">here</a>.</p>
+<h2 id="the-nojekyll-index-and-404-files">The nojekyll, index and 404 files</h2>
+<h3 id="nojekyll">.nojekyll</h3>
+<p>GitHub Pages are built using the <a href="https://jekyllrb.com">Jekyll</a> static site generator which does not build anything that starts with <code>_</code>. In the other hand, Blazor generates the <code>_framework</code> folder in its build which is essential to run the application since it contains the <code>blazor.webassembly.js</code> file in it. To bypass this rule in the upcoming workflow, we need to create an empty file named <code>.nojekyll</code> in the <code>BlazorApp\wwwroot</code> directory.</p>
+<h3 id="indexhtml">index.html</h3>
+<p>Still in the <code>BlazorApp\wwwroot</code> directory, in this existing file, add the following script inside the <code>body</code> tag. Basically, this script handles redirections by checking the URLs that are been queried:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/javascript&#34;</span><span style="color:#f92672">&gt;</span>
+    (<span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">l</span>) {
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">search</span>) {
+            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">q</span> <span style="color:#f92672">=</span> {};
+            <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">search</span>.<span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">1</span>).<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#39;&amp;&#39;</span>).<span style="color:#a6e22e">forEach</span>(<span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">v</span>) {
+                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#39;=&#39;</span>);
+                <span style="color:#a6e22e">q</span>[<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]] <span style="color:#f92672">=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">1</span>).<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#39;=&#39;</span>).<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/~and~/g</span>, <span style="color:#e6db74">&#39;&amp;&#39;</span>);
+            });
+            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">p</span> <span style="color:#f92672">!==</span> <span style="color:#66d9ef">undefined</span>) {
+                window.<span style="color:#a6e22e">history</span>.<span style="color:#a6e22e">replaceState</span>(<span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">null</span>,
+                    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">pathname</span>.<span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">0</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> (<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">p</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span>
+                    (<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">q</span> <span style="color:#f92672">?</span> (<span style="color:#e6db74">&#39;?&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">q</span>) <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span>
+                    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">hash</span>
+                );
+            }
+        }
+    }(window.<span style="color:#a6e22e">location</span>))
+<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/script&gt;</span>
+</code></pre></div><p>The next change depends on if you intend to use your main <code>github.io</code> reserved domain for the application. If it is the case, then you can skip it, but if not, change the value of the <code>base</code> tag:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">base</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/YourBlazorApplicationName/&#34;</span>/&gt;
+</code></pre></div><p>The URL of your application will be like this:</p>
+<p><code>https://yourGitHubUsername.github.io/YourBlazorApplicationName/</code></p>
+<h3 id="404html">404.html</h3>
+<p>To cap it off in the <code>BlazorApp\wwwroot</code> directory, create a file named <code>404.html</code>. Copy and paste all the <code>index.html</code> content into it except everything that it is inside the <code>body</code> tag, then add the following script inside the <code>head</code> tag for redirection purposes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/javascript&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">segmentCount</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">l</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">location</span>;
+    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">replace</span>(
+        <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">protocol</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;//&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">hostname</span> <span style="color:#f92672">+</span> (<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">port</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">port</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span>
+        <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">pathname</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#39;/&#39;</span>).<span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">segmentCount</span>).<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#39;/&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/?p=/&#39;</span> <span style="color:#f92672">+</span>
+        <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">pathname</span>.<span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">1</span>).<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#39;/&#39;</span>).<span style="color:#a6e22e">slice</span>(<span style="color:#a6e22e">segmentCount</span>).<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#39;/&#39;</span>).<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/&amp;/g</span>, <span style="color:#e6db74">&#39;~and~&#39;</span>) <span style="color:#f92672">+</span>
+        (<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">search</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;&amp;q=&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">search</span>.<span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">1</span>).<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">/&amp;/g</span>, <span style="color:#e6db74">&#39;~and~&#39;</span>) <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span>
+        <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">hash</span>
+    );
+<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/script&gt;</span>
+</code></pre></div><h2 id="the-settings">The settings</h2>
+<h3 id="workflow">Workflow</h3>
+<p>First, we need to automate the deployment for new releases of the application. In your repository in the GitHub, click on the <code>Actions</code> tab, then on the <code>set up a workflow yourself</code> link.</p>
+<p>Replace the content of the file for the following. Basically, it does:</p>
+<ul>
+<li>Setup .NET SDK version</li>
+<li>Publish the application into the <code>build</code> directory</li>
+<li>Deploy the content in the <code>build\wwwroot</code> directory into a new branch named <code>github-pages</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">name</span>: <span style="color:#ae81ff">CD</span>
+
+<span style="color:#f92672">on</span>:
+  <span style="color:#f92672">workflow_dispatch</span>:
+
+<span style="color:#f92672">jobs</span>:
+  <span style="color:#f92672">build</span>:
+    <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
+
+    <span style="color:#f92672">steps</span>:
+      - <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@v2</span>
+
+      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Setup .NET SDK</span>
+        <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-dotnet@v1.9.0</span>
+        <span style="color:#f92672">with</span>:
+          <span style="color:#f92672">dotnet-version</span>: <span style="color:#ae81ff">6.0.101</span>
+
+      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Publish</span>
+        <span style="color:#f92672">run</span>: <span style="color:#ae81ff">dotnet publish -c Release -o build</span>
+
+      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Deploy to GitHub Pages</span>
+        <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">JamesIves/github-pages-deploy-action@4.1.8</span>
+        <span style="color:#f92672">with</span>:
+          <span style="color:#f92672">token</span>: <span style="color:#ae81ff">${{ secrets.TOKEN }}</span>
+          <span style="color:#f92672">branch</span>: <span style="color:#ae81ff">github-pages</span>
+          <span style="color:#f92672">folder</span>: <span style="color:#ae81ff">build/wwwroot</span>
+          <span style="color:#f92672">single-commit</span>: <span style="color:#66d9ef">true</span>
+</code></pre></div><p>Click on the <code>Start commit</code> and <code>Commit new file</code> green buttons.</p>
+<h3 id="token">Token</h3>
+<p>Next, we need to create a token to grant access to the last step of the previous workflow so that it is runnable. <a href="https://github.com/settings/tokens">Click here</a> to go straight to the <code>Personal access tokens</code> page, then click on the <code>Generate new token</code> button.</p>
+<p>Fill the <code>Note</code> with a name and mark only the <code>repo</code> scope, then scroll to the bottom of the page and click on the <code>Generate token</code> green button.</p>
+<p><em><strong>Copy the new personal access token for further usage.</strong></em></p>
+<p>Now, back in your repository page, click on the <code>Settings</code> tab, then on the <code>Secrets</code> section, then on the <code>New repository secret</code> button.</p>
+<p>Name the secret as <code>TOKEN</code> and paste the previously generated token as its value, then click on the <code>Add secret</code> green button.</p>
+<h3 id="run-time">Run time</h3>
+<p>Third, we need to run the workflow so that it builds our application and deploy it in another branch targeted for the GitHub Pages. Click on the <code>Actions</code> tab, then on the <code>CD</code> workflow, then on the <code>Run workflow</code> twice.</p>
+<p>After the run, if all goes as expected, you should get a green badge.</p>
+<h3 id="publish-time">Publish time</h3>
+<p>Finally, we enable our application on GitHub Pages when someone access its URL. Click on the <code>Settings</code> tab, then on the <code>GitHub Pages</code> section, select <code>github-pages</code> as source, then click on the <code>Save</code> button.</p>
+<p>After a minute or so, by refreshing the page, click on the link provided in the green alert and that is it.</p>
+<h2 id="final-considerations">Final considerations</h2>
+<p>The biggest takeaway we get from this is that GitHub allows us to publish multiple projects under our reserved <code>github.io</code> domain, each one having its own URL suffix.</p>
+<p>Thanks for reading it!</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>The Enigma Machine - Part I - The Algorithm</title>
+            <link>https://devcbc.github.io/posts/2021/11/the-enigma-machine-part-i-the-algorithm/</link>
+            <pubDate>Wed, 03 Nov 2021 00:00:00 +0000</pubDate>
+            
+            <guid>https://devcbc.github.io/posts/2021/11/the-enigma-machine-part-i-the-algorithm/</guid>
+            <description>The motivation When I was in college, I attended a course of crypthography which whom our professor challenged us to code the enigma machine algorithm in Java. I was still figuring out the object-oriented programming back then, so the code was not pretty at all, but hey, it worked anyway.
+As the years went by and I kept developing my programming skills, I always had the desire to redo the algorithm with the best practices I have learned and in my favorite programming language: C#.</description>
+            <content type="html"><![CDATA[<h2 id="the-motivation">The motivation</h2>
+<p>When I was in college, I attended a course of crypthography which whom our professor challenged us to code the enigma machine algorithm in Java. I was still figuring out the object-oriented programming back then, so the code was not pretty at all, but hey, it worked anyway.</p>
+<p>As the years went by and I kept developing my programming skills, I always had the desire to redo the algorithm with the best practices I have learned and in my favorite programming language: C#. On top of that, as 2020 went by, Adobe Flash Player, thankfully, went too&hellip; but it putted one of the best online enigma machine simulator to rest.</p>
+<p>Despite still having a few online simulators, none of them pleased me like that one, which had an unique feature of all I crossed paths with: the ability to undo the typing! All that said, it was a perfect opportunity to release one, but in my own way.</p>
+<p>You can check the result <a href="https://devcbc.github.io/EnigmaSimulator/">here</a>. To walkthrought it, I splitted this project into a two part series:</p>
+<ul>
+<li>This post which details the algorithm itself</li>
+<li><a href="https://devcbc.github.io/posts/2021/11/the-enigma-machine-part-ii-publishing/">And one on how to publish it as a static website on GitHub Pages</a></li>
+</ul>
+<h2 id="a-brief-introduction-on-the-enigma-machine">A brief introduction on the Enigma Machine</h2>
+<h3 id="what-it-is">What it is?</h3>
+<p>Per <a href="https://en.wikipedia.org/wiki/Enigma_machine">Wikipedia</a>:</p>
+<blockquote>
+<p>&ldquo;It is a cipher device developed and used in the early to mid 20th century to protect commercial, diplomatic, and military communication.&rdquo;</p>
+</blockquote>
+<p>I will not get into the history of it, the above link will provide you a much more detailed info. But it is worth mentioning that althought a deep reading on the specs considering the era it was released will blow your mind, from the history point of view, keep in mind that it was because of a few brilliant mathematicians and cryptanalysts from many countries whom cracked the device that the World War II was substantially shortened for good.</p>
+<h3 id="how-it-works">How it works?</h3>
+<p>Abstracting the physical device and its components, let&rsquo;s break it down step by step the encryption of the <code>C</code> letter:</p>
+<blockquote>
+<p>First, the <code>C</code> letter is putted into the plugboard which converts it to a mapped letter. This mapping can be default or custom like this example:</p>
+<ul>
+<li>Every <code>C</code> becomes <code>C</code> (going and returning)</li>
+<li>Every <code>C</code> becomes <code>R</code> (going) and every <code>R</code> becomes <code>C</code> (returning)</li>
+</ul>
+<p>This is also the last step, but we will get to it later. Here it is as a flow chart:</p>
+</blockquote>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-1.png" alt="Image"></p>
+<blockquote>
+<p>Second, for every typed letter, the device spins all its rotors before converting it based on some rules:</p>
+<ol>
+<li>The third rotor always is spinned</li>
+<li>When the third rotor steps from a specific letter to another, the second rotor is spinned</li>
+<li>When the second rotor steps from a specific letter to another, the first rotor is spinned</li>
+</ol>
+<p>There are 8 different rotors, you can check them <a href="https://en.wikipedia.org/wiki/Enigma_rotor_details">here</a>. This project uses the I, II and III rotors and here are their specs:</p>
+<table>
+<thead>
+<tr>
+<th>Rotor</th>
+<th>Spin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I</td>
+<td>From Q to R</td>
+</tr>
+<tr>
+<td>II</td>
+<td>From E to F</td>
+</tr>
+<tr>
+<td>III</td>
+<td>From V to W</td>
+</tr>
+</tbody>
+</table>
+<p>The flow chart is represented by the next two images:</p>
+</blockquote>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-2.png" alt="Image"></p>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-3.png" alt="Image"></p>
+<blockquote>
+<p>Third, the converted letter from the plugboard is used to get its index on the spinned alphabet. The letter on the third rotor map that has this same index is used to get its index on the not spinned alphabet. The letter on the spinned alphabet that has this same index is the new output.</p>
+<p>In the link shown in the previous step you can check all the rotors mapping as well, but here are the chosen ones:</p>
+<table>
+<thead>
+<tr>
+<th>Rotor</th>
+<th>Mapping</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I</td>
+<td>EKMFLGDQVZNTOWYHXUSPAIBRCJ</td>
+</tr>
+<tr>
+<td>II</td>
+<td>AJDKSIRUXBLHWTMCQGZNPYFVOE</td>
+</tr>
+<tr>
+<td>III</td>
+<td>BDFHJLCPRTXVZNYEIWGAKMUSQO</td>
+</tr>
+</tbody>
+</table>
+<p>This step repeats itself from the other rotors. The next three images show it:</p>
+</blockquote>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-4.png" alt="Image"></p>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-5.png" alt="Image"></p>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-6.png" alt="Image"></p>
+<blockquote>
+<p>Fourth, the last converted letter from the rotors is putted into the reflector. It consists of a single alphabet splitted into two equal size sets and here it is the used UKW-B model specs:</p>
+<table>
+<thead>
+<tr>
+<th>Mapping</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>YRUHQSLPXNOZW</td>
+</tr>
+<tr>
+<td>ABCDEFGIJKMTV</td>
+</tr>
+</tbody>
+</table>
+<p>This step has no direction. Basically, the mapping that has the current letter is used to map to the other. Since the letter is <code>Z</code>:</p>
+</blockquote>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-7.png" alt="Image"></p>
+<blockquote>
+<p>Fifth, it runs all the rotors again, but in the other direction. Also, here the converted letter from the reflector is used to get its index on the spinned alphabet. The letter on the not spinned alphabet that has this same index is used to get its index on the first rotor map. The letter on the spinned alphabet that has this same index is the new output.</p>
+<p>This step repeats itself from the other rotors as well. The next three images show it:</p>
+</blockquote>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-8.png" alt="Image"></p>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-9.png" alt="Image"></p>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-10.png" alt="Image"></p>
+<blockquote>
+<p>Last, the last converted letter from the rotors is putted back into the plugboard, but in the other direction as well:</p>
+</blockquote>
+<p><img src="/posts/2021/11/the-enigma-machine-part-i-the-algorithm/img/post-11.png" alt="Image"></p>
+<h2 id="code-time">Code time</h2>
+<p>Starting by the <code>Plugboard</code> class which is used in the first and last steps. It has two private string properties: <code>MapA</code> which is static because it is a default alphabet and <code>MapB</code> which is up to the user to set it through an overloaded constructor. There is also a public method <code>Convert</code> that given two parameters: a letter and a boolean for direction, returns a new letter:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Plugboard</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">string</span> MapA =&gt; <span style="color:#e6db74">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;</span>;
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">string</span> MapB { <span style="color:#66d9ef">get</span>; }
+
+    <span style="color:#66d9ef">public</span> Plugboard(<span style="color:#66d9ef">string</span> mapB)
+    {
+        MapB = mapB;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">char</span> Convert(<span style="color:#66d9ef">char</span> <span style="color:#66d9ef">value</span>, <span style="color:#66d9ef">bool</span> isGoing) =&gt; isGoing
+        ? MapB[MapA.IndexOf(<span style="color:#66d9ef">value</span>)]
+        : MapA[MapB.IndexOf(<span style="color:#66d9ef">value</span>)];
+}
+</code></pre></div><p>All rotors have the same behavior and use three alphabets: one default, another one also default but spinned and last but not least, its own customized. The first two can be reused for any rotor given some parameters. The static <code>Alphabet</code> class has only one private static readonly property named <code>Maps</code> which consists of a dictionary where its keys are the current spin and its values are the spinned alphabet. To use it in the rotors, it has two public static methods:</p>
+<ul>
+<li><code>GetCharBy</code> that has two parameters: <code>key</code> which if not inputed uses a default zero value and it is responsible from getting the correct alphabet of the dictionary, and <code>index</code> that is responsible from getting the letter of the retrieved alphabet based on its index</li>
+<li><code>GetIndexBy</code> that has two parameters: <code>key</code> which has the same behavior as the same parameter in the previous method, and <code>value</code> that is responsible from getting the index of the retrieved alphabet based on its letter</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Alphabet</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">readonly</span> IDictionary&lt;<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">string</span>&gt; Maps = <span style="color:#66d9ef">new</span> Dictionary&lt;<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">string</span>&gt;
+    {
+        {<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;</span>},
+        {<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;ZABCDEFGHIJKLMNOPQRSTUVWXY&#34;</span>},
+        {<span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;YZABCDEFGHIJKLMNOPQRSTUVWX&#34;</span>},
+        {<span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#34;XYZABCDEFGHIJKLMNOPQRSTUVW&#34;</span>},
+        {<span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;WXYZABCDEFGHIJKLMNOPQRSTUV&#34;</span>},
+        {<span style="color:#ae81ff">5</span>, <span style="color:#e6db74">&#34;VWXYZABCDEFGHIJKLMNOPQRSTU&#34;</span>},
+        {<span style="color:#ae81ff">6</span>, <span style="color:#e6db74">&#34;UVWXYZABCDEFGHIJKLMNOPQRST&#34;</span>},
+        {<span style="color:#ae81ff">7</span>, <span style="color:#e6db74">&#34;TUVWXYZABCDEFGHIJKLMNOPQRS&#34;</span>},
+        {<span style="color:#ae81ff">8</span>, <span style="color:#e6db74">&#34;STUVWXYZABCDEFGHIJKLMNOPQR&#34;</span>},
+        {<span style="color:#ae81ff">9</span>, <span style="color:#e6db74">&#34;RSTUVWXYZABCDEFGHIJKLMNOPQ&#34;</span>},
+        {<span style="color:#ae81ff">10</span>, <span style="color:#e6db74">&#34;QRSTUVWXYZABCDEFGHIJKLMNOP&#34;</span>},
+        {<span style="color:#ae81ff">11</span>, <span style="color:#e6db74">&#34;PQRSTUVWXYZABCDEFGHIJKLMNO&#34;</span>},
+        {<span style="color:#ae81ff">12</span>, <span style="color:#e6db74">&#34;OPQRSTUVWXYZABCDEFGHIJKLMN&#34;</span>},
+        {<span style="color:#ae81ff">13</span>, <span style="color:#e6db74">&#34;NOPQRSTUVWXYZABCDEFGHIJKLM&#34;</span>},
+        {<span style="color:#ae81ff">14</span>, <span style="color:#e6db74">&#34;MNOPQRSTUVWXYZABCDEFGHIJKL&#34;</span>},
+        {<span style="color:#ae81ff">15</span>, <span style="color:#e6db74">&#34;LMNOPQRSTUVWXYZABCDEFGHIJK&#34;</span>},
+        {<span style="color:#ae81ff">16</span>, <span style="color:#e6db74">&#34;KLMNOPQRSTUVWXYZABCDEFGHIJ&#34;</span>},
+        {<span style="color:#ae81ff">17</span>, <span style="color:#e6db74">&#34;JKLMNOPQRSTUVWXYZABCDEFGHI&#34;</span>},
+        {<span style="color:#ae81ff">18</span>, <span style="color:#e6db74">&#34;IJKLMNOPQRSTUVWXYZABCDEFGH&#34;</span>},
+        {<span style="color:#ae81ff">19</span>, <span style="color:#e6db74">&#34;HIJKLMNOPQRSTUVWXYZABCDEFG&#34;</span>},
+        {<span style="color:#ae81ff">20</span>, <span style="color:#e6db74">&#34;GHIJKLMNOPQRSTUVWXYZABCDEF&#34;</span>},
+        {<span style="color:#ae81ff">21</span>, <span style="color:#e6db74">&#34;FGHIJKLMNOPQRSTUVWXYZABCDE&#34;</span>},
+        {<span style="color:#ae81ff">22</span>, <span style="color:#e6db74">&#34;EFGHIJKLMNOPQRSTUVWXYZABCD&#34;</span>},
+        {<span style="color:#ae81ff">23</span>, <span style="color:#e6db74">&#34;DEFGHIJKLMNOPQRSTUVWXYZABC&#34;</span>},
+        {<span style="color:#ae81ff">24</span>, <span style="color:#e6db74">&#34;CDEFGHIJKLMNOPQRSTUVWXYZAB&#34;</span>},
+        {<span style="color:#ae81ff">25</span>, <span style="color:#e6db74">&#34;BCDEFGHIJKLMNOPQRSTUVWXYZA&#34;</span>}
+    };
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">char</span> GetCharBy(<span style="color:#66d9ef">int</span> index, <span style="color:#66d9ef">int</span> key = <span style="color:#ae81ff">0</span>) =&gt; Maps[key][index];
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> GetIndexBy(<span style="color:#66d9ef">char</span> <span style="color:#66d9ef">value</span>, <span style="color:#66d9ef">int</span> key = <span style="color:#ae81ff">0</span>) =&gt; Maps[key].IndexOf(<span style="color:#66d9ef">value</span>);
+}
+</code></pre></div><p>Continuing on the &ldquo;all the rotors have the same behavior&rdquo; logic, the abstract <code>Rotor</code> class implements all the common behaviors while delegating to the concrete classes to implement all the specific behaviors. Basically, it is up to them to implement the abstract properties <code>RotorMap</code> and <code>SpinNextRotorCharForward</code> while the rest of the properties and methods are implemented here.</p>
+<p>It has the properties:</p>
+<ul>
+<li><code>CurrentChar</code>, which only its rotor can set it, but other classes can use it</li>
+<li><code>RotorMap</code>, which is set and used only by the concrete rotor classes</li>
+<li><code>SpinNextRotorCharForward</code>, which is set by the concrete rotor classes and used by other classes</li>
+<li><code>SpinNextRotorCharBackward</code>, which is the <code>SpinNextRotorCharForward</code> minus one casted to char for undo purposes</li>
+</ul>
+<p>The <code>CurrentChar</code> property is up to the user to set it through an overloaded constructor.</p>
+<p>There are also three public methods:</p>
+<ul>
+<li><code>Convert</code>, which given a letter and a boolean for direction, returns a new letter</li>
+<li><code>SpinForward</code>, which increments <code>CurrentChar</code> by one</li>
+<li><code>SpinBackward</code>, which decrements <code>CurrentChar</code> by one</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rotor</span>
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">char</span> CurrentChar { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">string</span> RotorMap { <span style="color:#66d9ef">get</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">char</span> SpinNextRotorCharBackward =&gt; (<span style="color:#66d9ef">char</span>) (SpinNextRotorCharForward - <span style="color:#ae81ff">1</span>);
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">char</span> SpinNextRotorCharForward { <span style="color:#66d9ef">get</span>; }
+
+    <span style="color:#66d9ef">protected</span> Rotor(<span style="color:#66d9ef">char</span> startingChar)
+    {
+        CurrentChar = startingChar;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">char</span> Convert(<span style="color:#66d9ef">char</span> <span style="color:#66d9ef">value</span>, <span style="color:#66d9ef">bool</span> isGoing)
+    {
+        <span style="color:#66d9ef">int</span> index;
+        <span style="color:#66d9ef">char</span> result;
+
+        <span style="color:#66d9ef">if</span> (isGoing)
+        {
+            index = Alphabet.GetIndexBy(<span style="color:#66d9ef">value</span>, CurrentChar - <span style="color:#ae81ff">65</span>);
+            result = RotorMap[index];
+            index = Alphabet.GetIndexBy(result);
+            result = Alphabet.GetCharBy(index, CurrentChar - <span style="color:#ae81ff">65</span>);
+        }
+        <span style="color:#66d9ef">else</span>
+        {
+            index = Alphabet.GetIndexBy(<span style="color:#66d9ef">value</span>, CurrentChar - <span style="color:#ae81ff">65</span>);
+            result = Alphabet.GetCharBy(index);
+            index = RotorMap.IndexOf(result);
+            result = Alphabet.GetCharBy(index, CurrentChar - <span style="color:#ae81ff">65</span>);
+        }
+
+        <span style="color:#66d9ef">return</span> result;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> SpinBackward() =&gt; CurrentChar = (<span style="color:#66d9ef">char</span>) (CurrentChar - <span style="color:#ae81ff">1</span> &lt; <span style="color:#ae81ff">65</span> ? <span style="color:#ae81ff">90</span> : CurrentChar - <span style="color:#ae81ff">1</span>);
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> SpinForward() =&gt; CurrentChar = (<span style="color:#66d9ef">char</span>) (CurrentChar + <span style="color:#ae81ff">1</span> &gt; <span style="color:#ae81ff">90</span> ? <span style="color:#ae81ff">65</span> : CurrentChar + <span style="color:#ae81ff">1</span>);
+}
+</code></pre></div><p>Now, the sealed concrete <code>Rotor</code> classes which whom just extends the abstract version and implement the required properties and methods:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">sealed</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RotorOne</span> : Rotor
+{
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">string</span> RotorMap =&gt; <span style="color:#e6db74">&#34;EKMFLGDQVZNTOWYHXUSPAIBRCJ&#34;</span>;
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">char</span> SpinNextRotorCharForward =&gt; <span style="color:#e6db74">&#39;R&#39;</span>;
+
+    <span style="color:#66d9ef">public</span> RotorOne(<span style="color:#66d9ef">char</span> startingChar) : <span style="color:#66d9ef">base</span>(startingChar)
+    {
+    }
+}
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">sealed</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RotorTwo</span> : Rotor
+{
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">string</span> RotorMap =&gt; <span style="color:#e6db74">&#34;AJDKSIRUXBLHWTMCQGZNPYFVOE&#34;</span>;
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">char</span> SpinNextRotorCharForward =&gt; <span style="color:#e6db74">&#39;F&#39;</span>;
+
+    <span style="color:#66d9ef">public</span> RotorTwo(<span style="color:#66d9ef">char</span> startingChar) : <span style="color:#66d9ef">base</span>(startingChar)
+    {
+    }
+}
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">sealed</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RotorThree</span> : Rotor
+{
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">string</span> RotorMap =&gt; <span style="color:#e6db74">&#34;BDFHJLCPRTXVZNYEIWGAKMUSQO&#34;</span>;
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">char</span> SpinNextRotorCharForward =&gt; <span style="color:#e6db74">&#39;W&#39;</span>;
+
+    <span style="color:#66d9ef">public</span> RotorThree(<span style="color:#66d9ef">char</span> startingChar) : <span style="color:#66d9ef">base</span>(startingChar)
+    {
+    }
+}
+</code></pre></div><p>Next, the static <code>Reflector</code> class which has two private static string properties: <code>MapA</code> and <code>MapB</code>. There is also a public static method <code>Convert</code> that given a letter returns a new letter:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Reflector</span>
+{
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">string</span> MapA =&gt; <span style="color:#e6db74">&#34;YRUHQSLPXNOZW&#34;</span>;
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">string</span> MapB =&gt; <span style="color:#e6db74">&#34;ABCDEFGIJKMTV&#34;</span>;
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">char</span> Convert(<span style="color:#66d9ef">char</span> <span style="color:#66d9ef">value</span>) =&gt; MapA.Contains(<span style="color:#66d9ef">value</span>)
+        ? MapB[MapA.IndexOf(<span style="color:#66d9ef">value</span>)]
+        : MapA[MapB.IndexOf(<span style="color:#66d9ef">value</span>)];
+}
+</code></pre></div><p>To cap it off, the engine of the machine: the <code>Enigma</code> class. It has the <code>Plugboard</code>, three &ldquo;to be determined&rdquo; <code>Rotor</code>, the <code>EncryptedMessage</code> and the <code>OriginalMessage</code> properties. There are also three methods:</p>
+<ul>
+<li><code>Encrypt</code>, which given a letter, runs the algorithm and append its converted letter to the <code>EncryptedMessage</code> and the original to the <code>OriginalMessage</code> properties</li>
+<li><code>Undo</code>, which is responsible for undoing the last <code>Encrypt</code> run</li>
+<li><code>Spin</code>, which is responsible for spinning, when needed, the rotors before the <code>Encrypt</code> method calls any <code>Convert</code> method</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Enigma</span>
+{
+    <span style="color:#66d9ef">public</span> Plugboard Plugboard { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> Rotor FirstRotor { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> Rotor SecondRotor { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> Rotor ThirdRotor { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> EncryptedMessage { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> OriginalMessage { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Encrypt(<span style="color:#66d9ef">char</span> character)
+    {
+        OriginalMessage += character;
+
+        <span style="color:#66d9ef">var</span> currentChar = Plugboard.Convert(character, <span style="color:#66d9ef">true</span>);
+
+        Spin();
+
+        currentChar = ThirdRotor.Convert(currentChar, <span style="color:#66d9ef">true</span>);
+        currentChar = SecondRotor.Convert(currentChar, <span style="color:#66d9ef">true</span>);
+        currentChar = FirstRotor.Convert(currentChar, <span style="color:#66d9ef">true</span>);
+
+        currentChar = Reflector.Convert(currentChar);
+
+        currentChar = FirstRotor.Convert(currentChar, <span style="color:#66d9ef">false</span>);
+        currentChar = SecondRotor.Convert(currentChar, <span style="color:#66d9ef">false</span>);
+        currentChar = ThirdRotor.Convert(currentChar, <span style="color:#66d9ef">false</span>);
+
+        currentChar = Plugboard.Convert(currentChar, <span style="color:#66d9ef">false</span>);
+
+        EncryptedMessage += currentChar;
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Undo()
+    {
+        <span style="color:#66d9ef">if</span> (OriginalMessage.Length &lt;= <span style="color:#ae81ff">0</span>)
+            <span style="color:#66d9ef">return</span>;
+
+        EncryptedMessage = EncryptedMessage[..^<span style="color:#ae81ff">1</span>];
+        OriginalMessage = OriginalMessage[..^<span style="color:#ae81ff">1</span>];
+
+        ThirdRotor.SpinBackward();
+
+        <span style="color:#66d9ef">if</span> (ThirdRotor.CurrentChar == ThirdRotor.SpinNextRotorCharBackward)
+            SecondRotor.SpinBackward();
+
+        <span style="color:#66d9ef">if</span> (SecondRotor.CurrentChar == SecondRotor.SpinNextRotorCharBackward)
+            FirstRotor.SpinBackward();
+    }
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> Spin()
+    {
+        ThirdRotor.SpinForward();
+
+        <span style="color:#66d9ef">if</span> (ThirdRotor.CurrentChar == ThirdRotor.SpinNextRotorCharForward)
+            SecondRotor.SpinForward();
+
+        <span style="color:#66d9ef">if</span> (SecondRotor.CurrentChar == SecondRotor.SpinNextRotorCharForward)
+            FirstRotor.SpinForward();
+    }
+}
+</code></pre></div><h2 id="improvements">Improvements?</h2>
+<p>The structure of the project allows it to include different rotors combinations since it uses abstraction.</p>
+<p><em><strong>P.S. if you think there are other upgrades, enhancements or tweaks that can be done, feel free to fork the <a href="https://github.com/devcbc/EnigmaSimulator">repository</a>, but keep in mind that the specs used here belongs to the M3 version of the Enigma Machine!</strong></em></p>
+<p>Thanks for reading it!</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>2021 NBA MVP Award Share - Part II - Machine Learning</title>
+            <link>https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/</link>
+            <pubDate>Fri, 21 May 2021 00:00:00 +0000</pubDate>
+            
+            <guid>https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/</guid>
+            <description>Refreshing the memory In the previous post, I built two datasets, one for training and another one for production. Without further ado, let&amp;rsquo;s predict the 2021 NBA MVP award share.
+Requirements We will use:
+ A Google Colab account  But, if you prefer to do it locally, you will need:
+ Python Matplotlib NumPy Pandas Scikit-learn Seaborn An IDE of your preference (I highly recommend Jupyter)  Let&amp;rsquo;s get to work Basic setup First, create a code cell including all the libraries that are going to be used:</description>
+            <content type="html"><![CDATA[<h2 id="refreshing-the-memory">Refreshing the memory</h2>
+<p>In the previous <a href="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/">post</a>, I built two datasets, one for <a href="https://raw.githubusercontent.com/devcbc/NBA-MVP-Award-Share-Scrap/main/CSVs/df_1980_2020.csv">training</a> and another one for <a href="https://raw.githubusercontent.com/devcbc/NBA-MVP-Award-Share-Scrap/main/CSVs/df_2021.csv">production</a>. Without further ado, let&rsquo;s predict the 2021 NBA MVP award share.</p>
+<h2 id="requirements">Requirements</h2>
+<p>We will use:</p>
+<ul>
+<li>A <a href="https://colab.research.google.com">Google Colab</a> account</li>
+</ul>
+<p>But, if you prefer to do it locally, you will need:</p>
+<ul>
+<li><a href="https://www.python.org">Python</a></li>
+<li><a href="https://matplotlib.org">Matplotlib</a></li>
+<li><a href="https://numpy.org/">NumPy</a></li>
+<li><a href="https://pandas.pydata.org">Pandas</a></li>
+<li><a href="https://scikit-learn.org/stable/">Scikit-learn</a></li>
+<li><a href="https://seaborn.pydata.org">Seaborn</a></li>
+<li>An IDE of your preference (I highly recommend <a href="https://jupyter.org">Jupyter</a>)</li>
+</ul>
+<h2 id="lets-get-to-work">Let&rsquo;s get to work</h2>
+<h3 id="basic-setup">Basic setup</h3>
+<p>First, create a code cell including all the libraries that are going to be used:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> metrics
+<span style="color:#f92672">from</span> sklearn.linear_model <span style="color:#f92672">import</span> LogisticRegression
+<span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> confusion_matrix
+<span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> GridSearchCV, StratifiedKFold
+<span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> MinMaxScaler
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+<span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+<span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+<span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+<span style="color:#f92672">import</span> warnings
+warnings<span style="color:#f92672">.</span>filterwarnings(<span style="color:#e6db74">&#39;ignore&#39;</span>)
+<span style="color:#f92672">from</span> google.colab <span style="color:#f92672">import</span> drive <span style="color:#75715e"># Import only if you are using Google Colab</span>
+</code></pre></div><p>Then, another one to import the training dataset from the Google Colab session:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#39;df_1980_2020.csv&#39;</span>, sep <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;,&#39;</span>, decimal <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.&#39;</span>)
+</code></pre></div><h3 id="more-data">More data</h3>
+<p>First, execute <code>df_train.info()</code> to visualize the current dataset structure. After analyzing it, start by splitting the string <code>Overall</code> column that is formatted as <code>12-34</code>, where the left side has the team wins and the right has the losses, into two new columns. Also, generate a percentage of wins column derived from those two:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train[<span style="color:#e6db74">&#39;Wins&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>Overall<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;-&#39;</span>)[<span style="color:#ae81ff">0</span>])<span style="color:#f92672">.</span>astype(int)
+df_train[<span style="color:#e6db74">&#39;Losses&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>Overall<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;-&#39;</span>)[<span style="color:#ae81ff">1</span>])<span style="color:#f92672">.</span>astype(int)
+df_train[<span style="color:#e6db74">&#39;W/L%&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>Wins <span style="color:#f92672">/</span> (df_train<span style="color:#f92672">.</span>Wins <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Losses)
+</code></pre></div><p>Then, create two new columns, the second one using the first two columns generated in the previous step:</p>
+<ul>
+<li>Percentage of games started</li>
+<li>Percentage of games played</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train[<span style="color:#e6db74">&#39;GS%&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>GS <span style="color:#f92672">/</span> df_train<span style="color:#f92672">.</span>G
+df_train[<span style="color:#e6db74">&#39;GP%&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>G <span style="color:#f92672">/</span> (df_train<span style="color:#f92672">.</span>Wins <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Losses)
+</code></pre></div><p>Finally, add two last columns, which are the most important to the upcoming training:</p>
+<ul>
+<li>The player ranking in the MVP award share based on the <code>Pts Won</code> column</li>
+<li>1 for the first ranked player, 0 for the rest of them</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train[<span style="color:#e6db74">&#39;MVP Rank&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;Season&#39;</span>)[<span style="color:#e6db74">&#39;Pts Won&#39;</span>]<span style="color:#f92672">.</span>rank(ascending <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>, method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;dense&#39;</span>)
+df_train[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(df_train[<span style="color:#e6db74">&#39;MVP Rank&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>)
+</code></pre></div><p>To sneak peek at the revamped structure, execute <code>df_train.tail()</code>.</p>
+<h3 id="keeping-focus">Keeping focus</h3>
+<p>Having all the extra needed columns generated, check the correlation between all the variables against the <code>Won MVP</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">corr <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>corr(method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;pearson&#39;</span>)
+won_mvp_corr <span style="color:#f92672">=</span> corr[[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]]
+won_mvp_corr[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]<span style="color:#f92672">.</span>abs()<span style="color:#f92672">.</span>sort_values()
+</code></pre></div><p>Aside from the <code>Won MVP</code>, <code>First</code>, <code>Share</code>, <code>Pts Won</code>, <code>Pts Max</code>, <code>MVP Rank</code> and <code>Season</code> variables which can not be used as features for the machine learning model because the production dataset does not have them, the correlations are weak. Why? Because by executing <code>df_train.Player.count()</code>, it results in 19.111 players through 42 seasons, which it is an average of over 455 players per season.</p>
+<p>A litte diving into the NBA world and it can be asserted that just a couple of dozens of players receive atleast one vote, which it is just a litter under 3% of the average total players per season. Again, why? Because the media votes on theirs top players of the season, which are commonly the higher scorers, the most efficents, playing in the best teams, and so on.</p>
+<p>There are a few stats that can be used to filter the dataset, but it can wrongly skip some notable players. For example, training including only players that averaged more than 20 points per game would left off Steve Nash, who won it in 2005 and 2006. That means only players whom received atleast one vote in the award share, no matter their stats, should remain in the dataset:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train_filtered <span style="color:#f92672">=</span> df_train[df_train[<span style="color:#e6db74">&#39;Pts Won&#39;</span>] <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>]
+</code></pre></div><p>Executing <code>df_train_filtered.Player.count()</code>, it results in 665 players through 42 seasons, which it is an average of almost 16 players per season. Checking the correlations again:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">corr <span style="color:#f92672">=</span> df_train_filtered<span style="color:#f92672">.</span>corr(method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;pearson&#39;</span>)
+won_mvp_corr <span style="color:#f92672">=</span> corr[[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]]
+won_mvp_corr[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]<span style="color:#f92672">.</span>abs()<span style="color:#f92672">.</span>sort_values()
+</code></pre></div><p>Take the <code>WS</code> variable, for example, it almost doubled its correlation.</p>
+<h3 id="understanding-the-data">Understanding the data</h3>
+<p>Before hand, create a generic method to plot two to be ordered variables:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">plot_two_variables</span>(df, title, var1, var1_order, var2, var2_order):
+    plt<span style="color:#f92672">.</span>style<span style="color:#f92672">.</span>use(<span style="color:#e6db74">&#39;fivethirtyeight&#39;</span>)
+    fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots()
+
+    mvp <span style="color:#f92672">=</span> df[df[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>]
+    non_mvp <span style="color:#f92672">=</span> df[df[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>]
+
+    ax<span style="color:#f92672">.</span>scatter(mvp[var1], mvp[var2], label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;MVP&#39;</span>, marker <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;^&#39;</span>, s <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>)
+    ax<span style="color:#f92672">.</span>scatter(non_mvp[var1], non_mvp[var2], label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Not MVP&#39;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">.2</span>)
+
+    ax<span style="color:#f92672">.</span>legend(loc <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;best&#39;</span>, prop <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;size&#39;</span>: <span style="color:#ae81ff">12</span>})
+
+    ax<span style="color:#f92672">.</span>set_xlabel(var1, fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span>)
+    ax<span style="color:#f92672">.</span>set_ylabel(var2, fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span>)
+
+    ax<span style="color:#f92672">.</span>set_xlim(ax<span style="color:#f92672">.</span>get_xlim()[::var1_order])
+    ax<span style="color:#f92672">.</span>set_ylim(ax<span style="color:#f92672">.</span>get_ylim()[::var2_order])
+
+    fig<span style="color:#f92672">.</span>suptitle(title, weight <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;bold&#39;</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>)
+
+    fig<span style="color:#f92672">.</span>text(x <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0.02</span>, y <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0.08</span>,
+        s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;_______________________________________________________&#39;</span>,
+        fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;grey&#39;</span>, horizontalalignment <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">.2</span>)
+
+    fig<span style="color:#f92672">.</span>text(x <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0.02</span>, y <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0.16</span>,
+        s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://devcbc.github.io&#39;</span>,
+        fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;grey&#39;</span>, horizontalalignment <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+</code></pre></div><p>First, how were the players contribution to the team wins against the overall seed of their respective teams?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plot_two_variables(df_train_filtered, <span style="color:#e6db74">&#39;Player Win Share VS Team Overall Seed&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#ae81ff">1</span>)
+</code></pre></div><p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-1.png" alt="Image"></p>
+<p>Notice that players who won it had a greater impact in the team wins, which translated to a better team ranking. But there are three players that won it dispite their teams not being ranked in the top 5:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train_filtered[(df_train_filtered[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&amp;</span> (df_train_filtered[<span style="color:#e6db74">&#39;Rk&#39;</span>] <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">5</span>)][[<span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;Overall&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>]]
+</code></pre></div><ul>
+<li>Moses Malone of the Houston Rockets in 1982</li>
+<li>Michael Jordan of the Chicago Bulls in 1988</li>
+<li>Russell Westbrook of the Oklahoma City Thunder in 2017</li>
+</ul>
+<p>Take Russell Westbrook in 2017, for example, whom had a compeling story. His co star Kevin Durant left him in the previous season dissing his playing style. That fueled him to average a triple double for the season with 31.6 points, 10.7 rebounds and 10.4 assists while breaking the NBA record for most triple double games in a season. This feat came at the last game of the season in which he also hitted the game winner at the buzzer from the half court. This type of info that is not purely a stat is not present in the dataset and it is hard to bring along.</p>
+<p>Next, how were the players scoring average against their efficiency rating?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plot_two_variables(df_train_filtered, <span style="color:#e6db74">&#39;Points Per Game VS Efficiency Rating&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#39;PER&#39;</span>, <span style="color:#ae81ff">1</span>)
+</code></pre></div><p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-2.png" alt="Image"></p>
+<p>As expected, great players have higher scoring average and tend to be very efficient doing so. But, again, some exceptions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train_filtered[(df_train_filtered[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&amp;</span> (df_train_filtered[<span style="color:#e6db74">&#39;PTS&#39;</span>] <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">20</span>)][[<span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;Overall&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>]]
+</code></pre></div><p>It results in Steve Nash of the Phoenix Suns in 2005 and 2006. Dispite averaging below 20 points per game, it was his all around game that led him to won it in two consecutive seasons. He turned the 24th team in 2004 into the 1st team in 2005 and kept them in the top 5 in 2006. That was an outstanding achievement which it is also not present in the dataset and it is also hard to bring along, because the need to consider multiple seasons and multi variables exponentially increases the complexity.</p>
+<p>Last, how were the teams overall seed against the value of replacement of its players?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plot_two_variables(df_train_filtered, <span style="color:#e6db74">&#39;Team Overall Seed VS Player Value of Replacement&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>, <span style="color:#ae81ff">1</span>)
+</code></pre></div><p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-3.png" alt="Image"></p>
+<p>Same as the previous, players who won it are extremely valuable to their teams in case of an injury or a trade. No analysis is needed since the exceptions are the same of the first one.</p>
+<h3 id="practice-time">Practice time</h3>
+<p>First, build the features to be used in the machine learning model, in other words, define all the variables:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">build_features</span>(df_train, df_test):
+    mms <span style="color:#f92672">=</span> MinMaxScaler()
+
+    x_train_mms <span style="color:#f92672">=</span> mms<span style="color:#f92672">.</span>fit_transform(df_train[[<span style="color:#e6db74">&#39;ORB%&#39;</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>, <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;3PAr&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>, <span style="color:#e6db74">&#39;GS&#39;</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>,
+                                              <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>, <span style="color:#e6db74">&#39;DRB%&#39;</span>, <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;3P&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;PF&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>,
+                                              <span style="color:#e6db74">&#39;eFG%&#39;</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>, <span style="color:#e6db74">&#39;2PA&#39;</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>, <span style="color:#e6db74">&#39;2P&#39;</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>, <span style="color:#e6db74">&#39;USG%&#39;</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>, <span style="color:#e6db74">&#39;FT&#39;</span>,
+                                              <span style="color:#e6db74">&#39;DWS&#39;</span>, <span style="color:#e6db74">&#39;FG&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>, <span style="color:#e6db74">&#39;PER&#39;</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>,
+                                              <span style="color:#e6db74">&#39;Wins&#39;</span>, <span style="color:#e6db74">&#39;Losses&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>, <span style="color:#e6db74">&#39;GS%&#39;</span>, <span style="color:#e6db74">&#39;GP%&#39;</span>]])
+
+    x_test_mms <span style="color:#f92672">=</span> mms<span style="color:#f92672">.</span>transform(df_test[[<span style="color:#e6db74">&#39;ORB%&#39;</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>, <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;3PAr&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>, <span style="color:#e6db74">&#39;GS&#39;</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>,
+                                        <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>, <span style="color:#e6db74">&#39;DRB%&#39;</span>, <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;3P&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;PF&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>,
+                                        <span style="color:#e6db74">&#39;eFG%&#39;</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>, <span style="color:#e6db74">&#39;2PA&#39;</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>, <span style="color:#e6db74">&#39;2P&#39;</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>, <span style="color:#e6db74">&#39;USG%&#39;</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>, <span style="color:#e6db74">&#39;FT&#39;</span>,
+                                        <span style="color:#e6db74">&#39;DWS&#39;</span>, <span style="color:#e6db74">&#39;FG&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>, <span style="color:#e6db74">&#39;PER&#39;</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>,
+                                        <span style="color:#e6db74">&#39;Wins&#39;</span>, <span style="color:#e6db74">&#39;Losses&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>, <span style="color:#e6db74">&#39;GS%&#39;</span>, <span style="color:#e6db74">&#39;GP%&#39;</span>]])
+
+    x_train <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>hstack([x_train_mms])
+    x_test <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>hstack([x_test_mms])
+
+    y_train <span style="color:#f92672">=</span> df_train[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]<span style="color:#f92672">.</span>values<span style="color:#f92672">.</span>reshape(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>)
+    y_test <span style="color:#f92672">=</span> df_test[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]<span style="color:#f92672">.</span>values<span style="color:#f92672">.</span>reshape(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>)
+
+    <span style="color:#66d9ef">return</span> x_train, y_train, x_test, y_test
+</code></pre></div><p>Then, build the logistic regression model:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">model <span style="color:#f92672">=</span> LogisticRegression(solver <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;liblinear&#39;</span>)
+</code></pre></div><p>For every season of the iteration, the following code will train all the seasons except the current one, and test only the current one:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train_predicted <span style="color:#f92672">=</span> []
+results_matrix <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(shape <span style="color:#f92672">=</span> (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2020</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1980</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">2</span>))
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1980</span>, <span style="color:#ae81ff">2021</span>):
+    fold <span style="color:#f92672">=</span> season <span style="color:#f92672">-</span> <span style="color:#ae81ff">1980</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+    df_train <span style="color:#f92672">=</span> df_train_filtered[df_train_filtered<span style="color:#f92672">.</span>Season <span style="color:#f92672">!=</span> season]
+    df_test <span style="color:#f92672">=</span> df_train_filtered[df_train_filtered<span style="color:#f92672">.</span>Season <span style="color:#f92672">==</span> season]
+
+    x_train, y_train, x_test, y_test <span style="color:#f92672">=</span> build_features(df_train, df_test)
+
+    model<span style="color:#f92672">.</span>fit(x_train, y_train)
+
+    df_train_rank <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>copy()
+    df_train_rank[<span style="color:#e6db74">&#39;MVP Odds&#39;</span>] <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>predict_proba(x_train)[:, <span style="color:#ae81ff">1</span>]
+
+    df_train_rank[<span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>] <span style="color:#f92672">=</span> df_train_rank<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;Season&#39;</span>)[<span style="color:#e6db74">&#39;MVP Odds&#39;</span>]<span style="color:#f92672">.</span>rank(ascending <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>, method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;dense&#39;</span>)
+
+    df_train_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">=</span> df_train_rank[<span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>]
+    df_train_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>]<span style="color:#f92672">.</span>loc[df_train_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+
+    df_train_rank_won_mvp <span style="color:#f92672">=</span> df_train_rank[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]
+    df_train_rank_predicted_mvp_winner <span style="color:#f92672">=</span> df_train_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>]
+
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>accuracy_score(df_train_rank_won_mvp, df_train_rank_predicted_mvp_winner)
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>precision_score(df_train_rank_won_mvp, df_train_rank_predicted_mvp_winner)
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>recall_score(df_train_rank_won_mvp, df_train_rank_predicted_mvp_winner)
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>f1_score(df_train_rank_won_mvp, df_train_rank_predicted_mvp_winner)
+
+    df_test_rank <span style="color:#f92672">=</span> df_test<span style="color:#f92672">.</span>copy()
+    df_test_rank[<span style="color:#e6db74">&#39;MVP Odds&#39;</span>] <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>predict_proba(x_test)[:, <span style="color:#ae81ff">1</span>]
+
+    df_train_predicted<span style="color:#f92672">.</span>append(df_test_rank)
+
+    df_test_rank[<span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>] <span style="color:#f92672">=</span> df_test_rank<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;Season&#39;</span>)[<span style="color:#e6db74">&#39;MVP Odds&#39;</span>]<span style="color:#f92672">.</span>rank(ascending <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>, method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;dense&#39;</span>)
+
+    df_test_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">=</span> df_test_rank[<span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>]
+    df_test_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>]<span style="color:#f92672">.</span>loc[df_test_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+
+    df_test_rank_won_mvp <span style="color:#f92672">=</span> df_test_rank[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]
+    df_test_rank_predicted_mvp_winner <span style="color:#f92672">=</span> df_test_rank[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>]
+
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>accuracy_score(df_test_rank_won_mvp, df_test_rank_predicted_mvp_winner)
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>precision_score(df_test_rank_won_mvp, df_test_rank_predicted_mvp_winner)
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>recall_score(df_test_rank_won_mvp, df_test_rank_predicted_mvp_winner)
+    results_matrix[<span style="color:#ae81ff">0</span>, fold, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> metrics<span style="color:#f92672">.</span>f1_score(df_test_rank_won_mvp, df_test_rank_predicted_mvp_winner)
+</code></pre></div><p>Generating the results:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">print(<span style="color:#e6db74">&#39;Algorithm: Logistic Regression&#39;</span>)
+print()
+print(<span style="color:#e6db74">&#39;Train&#39;</span>)
+print(<span style="color:#e6db74">&#39;Accuracy:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>mean())
+print(<span style="color:#e6db74">&#39;Precision:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>mean())
+print(<span style="color:#e6db74">&#39;Coverage:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>mean())
+print(<span style="color:#e6db74">&#39;F Measure:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>mean())
+print()
+print(<span style="color:#e6db74">&#39;Test&#39;</span>)
+print(<span style="color:#e6db74">&#39;Accuracy:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>mean())
+print(<span style="color:#e6db74">&#39;Precision:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>mean())
+print(<span style="color:#e6db74">&#39;Coverage:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>mean())
+print(<span style="color:#e6db74">&#39;F Measure:&#39;</span>, results_matrix[<span style="color:#ae81ff">0</span>, :, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>mean())
+</code></pre></div><pre tabindex="0"><code>Algorithm: Logistic Regression
+
+Train
+Accuracy: 0.9703201884925161
+Precision: 0.759375
+Coverage: 0.759375
+F Measure: 0.759375
+
+Test
+Accuracy: 0.962096742520604
+Precision: 0.7
+Coverage: 0.7
+F Measure: 0.7
+</code></pre><p>It looks good and we will dive into it&hellip; later.</p>
+<h3 id="analysis">Analysis</h3>
+<p>Before hand, execute <code>df_train_predicted = pd.concat(df_train_predicted)</code>.</p>
+<p>First, who were the players who won it but the prediction missed it?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train_predicted[(df_train_predicted[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&amp;</span> (df_train_predicted[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>)][[<span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;Overall&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>, <span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>]]
+</code></pre></div><p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-4.png" alt="Image"></p>
+<p>Remember Russell Westbrook, Steve Nash? Here they are alongside a few others.</p>
+<p>Next, who were the players that did not won it but the prediction said they did?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train_predicted[(df_train_predicted[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&amp;</span> (df_train_predicted[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>)][[<span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;Overall&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>, <span style="color:#e6db74">&#39;MVP Rank&#39;</span>]]
+</code></pre></div><p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-5.png" alt="Image"></p>
+<p>This are the players that were benefited for the lack of non-stats info in the dataset.</p>
+<p>Last, the correct predictions. Since it is a bigger list than the others, just the code snippet:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train_predicted[(df_train_predicted[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&amp;</span> (df_train_predicted[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>)][[<span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;Overall&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>]]
+</code></pre></div><p>Summing it all up while diving into the metrics, the confusion matrix:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">predicted <span style="color:#f92672">=</span> df_train_predicted[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>]
+ground_truth <span style="color:#f92672">=</span> df_train_predicted[<span style="color:#e6db74">&#39;Won MVP&#39;</span>]
+
+cm <span style="color:#f92672">=</span> confusion_matrix(ground_truth, predicted)
+
+plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#39;Confusion Matrix - MVP Prediction&#39;</span>)
+sns<span style="color:#f92672">.</span>heatmap(cm, annot <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>, fmt <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.2f&#39;</span>, cmap <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;rocket_r&#39;</span>)
+
+plt<span style="color:#f92672">.</span>text(x <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0.02</span>, y <span style="color:#f92672">=</span> <span style="color:#ae81ff">2.16</span>,
+    s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;_______________________________________________________&#39;</span>,
+    fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;grey&#39;</span>, horizontalalignment <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">.2</span>)
+
+plt<span style="color:#f92672">.</span>text(x <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">0.02</span>, y <span style="color:#f92672">=</span> <span style="color:#ae81ff">2.32</span>,
+    s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://devcbc.github.io&#39;</span>,
+    fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;grey&#39;</span>, horizontalalignment <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-6.png" alt="Image"></p>
+<p>The model made 24 incorret predictions within 665 records, impling 12 false negatives and 12 false positives. It also made 641 correct predictions, being 612 of non winning players and 29 of winning ones.</p>
+<h3 id="production-time">Production time</h3>
+<p>First, import the production dataset from the Google Colab session:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_production <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#39;df_2021.csv&#39;</span>, sep <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;,&#39;</span>, decimal <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.&#39;</span>)
+</code></pre></div><p>As well as did in the training, generate the same columns except the <code>MVP Rank</code> and fill the <code>Won MVP</code> with zeros:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_production[<span style="color:#e6db74">&#39;Wins&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>Overall<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;-&#39;</span>)[<span style="color:#ae81ff">0</span>])<span style="color:#f92672">.</span>astype(int)
+df_production[<span style="color:#e6db74">&#39;Losses&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>Overall<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;-&#39;</span>)[<span style="color:#ae81ff">1</span>])<span style="color:#f92672">.</span>astype(int)
+df_production[<span style="color:#e6db74">&#39;W/L%&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>Wins <span style="color:#f92672">/</span> (df_production<span style="color:#f92672">.</span>Wins <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Losses)
+
+df_production[<span style="color:#e6db74">&#39;GS%&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>GS <span style="color:#f92672">/</span> df_production<span style="color:#f92672">.</span>G
+df_production[<span style="color:#e6db74">&#39;GP%&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>G <span style="color:#f92672">/</span> (df_production<span style="color:#f92672">.</span>Wins <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Losses)
+
+df_production[<span style="color:#e6db74">&#39;Won MVP&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</code></pre></div><p>The training dataset was filtered by the <code>Pts Won</code> column that does not exist in the production dataset. The question is, which filter to apply knowing it has 626 players by executing <code>df_production.Player.count()</code> and only a few dozens will receive votes?</p>
+<p>There are a few ways to do it, but it can end up skipping some key players if choosing stats like points per game, player efficiency rating and so on. Considering all the analysis that were made, the best filter here is a combination of games started and games played. This season had a shorter off season due to the latest around the world that delayed the conclusion of the previous season, which made more players, including stars, suffering more injuries this season. So, filter by players who started 90% of the games and played 70% of it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_production <span style="color:#f92672">=</span> df_production[(df_production[<span style="color:#e6db74">&#39;GS%&#39;</span>] <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.9</span>) <span style="color:#f92672">&amp;</span> (df_production[<span style="color:#e6db74">&#39;GP%&#39;</span>] <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.7</span>)]
+</code></pre></div><p>Executing <code>df_production.Player.count()</code> again, it results in 82 players.</p>
+<p>Then, build the model features and predict the odds:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">x_train, y_train, x_test, y_test <span style="color:#f92672">=</span> build_features(df_train_filtered, df_production)
+x_complete <span style="color:#f92672">=</span> x_train
+y_complete <span style="color:#f92672">=</span> y_train
+
+model<span style="color:#f92672">.</span>fit(x_complete, y_complete)
+
+df_production[<span style="color:#e6db74">&#39;MVP Odds&#39;</span>] <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>predict_proba(x_test)[:, <span style="color:#ae81ff">1</span>]
+
+df_production[<span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74">&#39;Season&#39;</span>)[<span style="color:#e6db74">&#39;MVP Odds&#39;</span>]<span style="color:#f92672">.</span>rank(ascending <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>, method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;dense&#39;</span>)
+
+df_production[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">=</span> df_production[<span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>]
+df_production[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>]<span style="color:#f92672">.</span>loc[df_production[<span style="color:#e6db74">&#39;Predicted MVP Winner&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</code></pre></div><p>Generating the results:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_production<span style="color:#f92672">.</span>sort_values(by <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;Predicted MVP Rank&#39;</span>], ascending <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)[[<span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>, <span style="color:#e6db74">&#39;Overall&#39;</span>, <span style="color:#e6db74">&#39;W/L%&#39;</span>, <span style="color:#e6db74">&#39;MVP Odds&#39;</span>]]<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+</code></pre></div><p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-7.png" alt="Image"></p>
+<p>According to the model, <em><strong>Nikola Jokić of the Denver Nuggets will win the 2021 NBA MVP award share</strong></em>.</p>
+<p>He is followed by:</p>
+<ul>
+<li>Joel Embiid of the Philadelphia 76ers</li>
+<li>Giannis Antetokounmpo of the Milwaukee Bucks</li>
+</ul>
+<p>The official results are yet to be released after the season conclusion on May 16, 2021, but the NBA has announced the finalists on May 20, 2021:</p>
+<p><img src="/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/img/post-8.png" alt="Image"></p>
+<p>They are, alphabetically ordered:</p>
+<ol>
+<li>Stephen Curry of the Golden State Warriors</li>
+<li>Joel Embiid of the Philadelphia 76ers</li>
+<li>Nikola Jokić of the Denver Nuggets</li>
+</ol>
+<p>Since the databases have been built on May 17, 2021, one day after the conclusion of the season, it is safe to say that the model is highly accurate, correctly predicting 2 of the top 3 players of the season, including the expected winner.</p>
+<p><em><strong>P.S. you can check the GitHub repository <a href="https://github.com/devcbc/NBA-MVP-Award-Share-Machine-Learning">here</a> or the Google Colab <a href="https://colab.research.google.com/drive/1GznYuGo34GOvgtLe2_beRDqqfww0JDtJ?usp=sharing">here</a>.</strong></em></p>
+<p>Thanks for reading it!</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>2021 NBA MVP Award Share - Part I - Scrap</title>
+            <link>https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/</link>
+            <pubDate>Mon, 17 May 2021 00:00:00 +0000</pubDate>
+            
+            <guid>https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/</guid>
+            <description>The idea I had a Data Science professor that once quote:
+ It is harder to mine the data then analyze it.
+ That quote stuck in my head and it led to this post that will show you the challenges while mining data!
+Since I am a huge NBA fan and there are tons of stats of its players, I had decided to built two datasets that enable us to predict the 2021 NBA MVP award share, which it is the highest individual accolade for a basketball player in a season.</description>
+            <content type="html"><![CDATA[<h2 id="the-idea">The idea</h2>
+<p>I had a Data Science professor that once quote:</p>
+<blockquote>
+<p>It is harder to mine the data then analyze it.</p>
+</blockquote>
+<p>That quote stuck in my head and it led to this post that will show you the challenges while mining data!</p>
+<p>Since I am a huge NBA fan and there are tons of stats of its players, I had decided to built two datasets that enable us to predict the <a href="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/">2021 NBA MVP award share</a>, which it is the highest individual accolade for a basketball player in a season.</p>
+<p>Like any other data science problem, we need to know its business to be able to get better data. For this task, we will extract 42 years of data from every single player that stepped on the court and their respective teams to build the datasets. We could go even further, but before the 80’s, there were some stats that were not tracked or even rules that were yet to be implemented, like three point baskets, but that is fine, our time span remains wide. <a href="https://www.basketball-reference.com">Basketball Reference</a> has a lot of great data waiting to be scraped, so in order to achieve our goal we need to scrap:</p>
+<ul>
+<li><a href="https://www.basketball-reference.com/leagues/NBA_2021_per_game.html">Players basic stats</a>, which includes points per game, rebounds, assists, steals, blocks and many more</li>
+<li><a href="https://www.basketball-reference.com/leagues/NBA_2021_advanced.html">Players advanced stats</a>, which includes player efficiency rating, true shooting, win shares and so on</li>
+<li><a href="https://www.basketball-reference.com/awards/awards_2020.html">Players MVP award voting</a>, where the gold is for the training dataset</li>
+<li><a href="https://www.basketball-reference.com/leagues/NBA_2021_standings.html">Teams standings</a>, which just the ranking, team name and the overall record are needed</li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<p>We will use:</p>
+<ul>
+<li>A <a href="https://colab.research.google.com">Google Colab</a> account</li>
+</ul>
+<p>But, if you prefer to do it locally, you will need:</p>
+<ul>
+<li><a href="https://www.python.org">Python</a></li>
+<li><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.html">Beautiful Soup</a></li>
+<li><a href="https://pandas.pydata.org">Pandas</a></li>
+<li>An IDE of your preference (I highly recommend <a href="https://jupyter.org">Jupyter</a>)</li>
+</ul>
+<h2 id="lets-get-to-work">Let&rsquo;s get to work</h2>
+<h3 id="basic-setup">Basic setup</h3>
+<p>First, create a code cell including all the libraries that are going to be used:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> bs4 <span style="color:#f92672">import</span> BeautifulSoup, Comment
+<span style="color:#f92672">from</span> urllib.request <span style="color:#f92672">import</span> urlopen
+<span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+<span style="color:#f92672">import</span> re
+<span style="color:#f92672">import</span> warnings
+warnings<span style="color:#f92672">.</span>filterwarnings(<span style="color:#e6db74">&#39;ignore&#39;</span>)
+<span style="color:#f92672">from</span> google.colab <span style="color:#f92672">import</span> drive <span style="color:#75715e"># Import only if you are using Google Colab</span>
+</code></pre></div><p>Then, another one including a list of seasons the scraps will cover:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">seasons <span style="color:#f92672">=</span> list(range(<span style="color:#ae81ff">1980</span>, <span style="color:#ae81ff">2022</span>))
+</code></pre></div><h3 id="scrap-time">Scrap time</h3>
+<h4 id="players-basic-stats">Players basic stats</h4>
+<p>It is the only table in the page and we need all the columns except the <code>Rk</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">basic_stats_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/leagues/NBA_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">_per_game.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][<span style="color:#ae81ff">1</span>:]
+
+    rows <span style="color:#f92672">=</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, class_ <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;thead&#39;</span>)[<span style="color:#ae81ff">1</span>:]
+    players_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;td&#39;</span>)] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(players_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    basic_stats_per_season<span style="color:#f92672">.</span>append(stats)
+
+basic_stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(basic_stats_per_season)
+</code></pre></div><p>Execute <code>basic_stats.tail()</code> to preview the table.</p>
+<p>The <code>Season</code> generated column is the only extra that will also be generated in all the following tables. It is the key for merging them all together.</p>
+<h4 id="players-advanced-stats">Players advanced stats</h4>
+<p>It goes like the previous one:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">advanced_stats_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/leagues/NBA_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">_advanced.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][<span style="color:#ae81ff">1</span>:]
+
+    rows <span style="color:#f92672">=</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, class_ <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;thead&#39;</span>)[<span style="color:#ae81ff">1</span>:]
+    players_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;td&#39;</span>)] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(players_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    advanced_stats_per_season<span style="color:#f92672">.</span>append(stats)
+
+advanced_stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(advanced_stats_per_season)
+</code></pre></div><p>Execute <code>advanced_stats.tail()</code> to preview the table.</p>
+<h4 id="players-mvp-award-voting">Players MVP award voting</h4>
+<p><em><strong>This. Is. The. Gold!</strong></em></p>
+<p>And also the only one that goes until the 2020 season and not the 2021 season, because it is only used for training:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">mvp_award_voting_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons[:<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/awards/awards_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][<span style="color:#ae81ff">1</span>:]
+
+    table <span style="color:#f92672">=</span> soup<span style="color:#f92672">.</span>find(<span style="color:#66d9ef">lambda</span> tag: tag<span style="color:#f92672">.</span>has_attr(<span style="color:#e6db74">&#39;id&#39;</span>) <span style="color:#f92672">and</span> tag[<span style="color:#e6db74">&#39;id&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;mvp&#39;</span>)
+    rows <span style="color:#f92672">=</span> table<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, class_ <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;thead&#39;</span>)[<span style="color:#ae81ff">1</span>:]
+    players_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;td&#39;</span>)] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(players_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    mvp_award_voting_per_season<span style="color:#f92672">.</span>append(stats)
+
+mvp_award_voting <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(mvp_award_voting_per_season)
+</code></pre></div><p>Execute <code>mvp_award_voting.tail()</code> to preview the table.</p>
+<h4 id="teams-standings">Teams standings</h4>
+<p>Just the <code>Rk</code>, <code>Team</code> and <code>Overall</code> columns of the <code>Expanded Standings</code> table in the page are needed:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">standings_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/leagues/NBA_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">_standings.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    commented_html <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> comments <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(text <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> text:isinstance(text, Comment)):
+        commented_html<span style="color:#f92672">.</span>append(comments<span style="color:#f92672">.</span>extract())
+    commented_soup <span style="color:#f92672">=</span> BeautifulSoup(commented_html[<span style="color:#ae81ff">28</span>])
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> commented_soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][:<span style="color:#ae81ff">3</span>]
+
+    rows <span style="color:#f92672">=</span> commented_soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>)[<span style="color:#ae81ff">2</span>:]
+    teams_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#66d9ef">lambda</span> tag: tag<span style="color:#f92672">.</span>has_attr(<span style="color:#e6db74">&#39;data-stat&#39;</span>) <span style="color:#f92672">and</span> tag[<span style="color:#e6db74">&#39;data-stat&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;ranker&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;team_name&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;Overall&#39;</span>)][:<span style="color:#ae81ff">4</span>] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+    <span style="color:#66d9ef">for</span> team_stat <span style="color:#f92672">in</span> teams_stats:
+        team_stat<span style="color:#f92672">.</span>pop(<span style="color:#ae81ff">2</span>)
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(teams_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    standings_per_season<span style="color:#f92672">.</span>append(stats)
+
+standings_stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(standings_per_season)
+</code></pre></div><p>Execute <code>standings_stats.tail()</code> to preview the table.</p>
+<h3 id="minor-tweaks">Minor tweaks</h3>
+<p>If you take a closer look at all the scraped tables, you will notice that there are two key issues that makes merging some of them together fail or result in data inconsistencies.</p>
+<p>First, the <code>standings_stats</code> table has the full name of the teams while all the others have the teams initial letters. This issue makes merging this table to others impossible since the to be created indexes will not match between them. To fix this, first, build a dictionary of full names / initial letters from the teams:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">teams <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;Atlanta Hawks&#39;</span>: <span style="color:#e6db74">&#39;ATL&#39;</span>,
+         <span style="color:#e6db74">&#39;Boston Celtics&#39;</span>: <span style="color:#e6db74">&#39;BOS&#39;</span>,
+         <span style="color:#e6db74">&#39;Brooklyn Nets&#39;</span>: <span style="color:#e6db74">&#39;BRK&#39;</span>,
+         <span style="color:#e6db74">&#39;Charlotte Bobcats&#39;</span>: <span style="color:#e6db74">&#39;CHA&#39;</span>,
+         <span style="color:#e6db74">&#39;Charlotte Hornets&#39;</span>: <span style="color:#e6db74">&#39;CHH/CHO&#39;</span>,
+         <span style="color:#e6db74">&#39;Chicago Bulls&#39;</span>: <span style="color:#e6db74">&#39;CHI&#39;</span>,
+         <span style="color:#e6db74">&#39;Cleveland Cavaliers&#39;</span>: <span style="color:#e6db74">&#39;CLE&#39;</span>,
+         <span style="color:#e6db74">&#39;Dallas Mavericks&#39;</span>: <span style="color:#e6db74">&#39;DAL&#39;</span>,
+         <span style="color:#e6db74">&#39;Denver Nuggets&#39;</span>: <span style="color:#e6db74">&#39;DEN&#39;</span>,
+         <span style="color:#e6db74">&#39;Detroit Pistons&#39;</span>: <span style="color:#e6db74">&#39;DET&#39;</span>,
+         <span style="color:#e6db74">&#39;Golden State Warriors&#39;</span>: <span style="color:#e6db74">&#39;GSW&#39;</span>,
+         <span style="color:#e6db74">&#39;Houston Rockets&#39;</span>: <span style="color:#e6db74">&#39;HOU&#39;</span>,
+         <span style="color:#e6db74">&#39;Indiana Pacers&#39;</span>: <span style="color:#e6db74">&#39;IND&#39;</span>,
+         <span style="color:#e6db74">&#39;Kansas City Kings&#39;</span>: <span style="color:#e6db74">&#39;KCK&#39;</span>,
+         <span style="color:#e6db74">&#39;Los Angeles Clippers&#39;</span>: <span style="color:#e6db74">&#39;LAC&#39;</span>,
+         <span style="color:#e6db74">&#39;Los Angeles Lakers&#39;</span>: <span style="color:#e6db74">&#39;LAL&#39;</span>,
+         <span style="color:#e6db74">&#39;Memphis Grizzlies&#39;</span>: <span style="color:#e6db74">&#39;MEM&#39;</span>,
+         <span style="color:#e6db74">&#39;Miami Heat&#39;</span>: <span style="color:#e6db74">&#39;MIA&#39;</span>,
+         <span style="color:#e6db74">&#39;Milwaukee Bucks&#39;</span>: <span style="color:#e6db74">&#39;MIL&#39;</span>,
+         <span style="color:#e6db74">&#39;Minnesota Timberwolves&#39;</span>: <span style="color:#e6db74">&#39;MIN&#39;</span>,
+         <span style="color:#e6db74">&#39;New Jersey Nets&#39;</span>: <span style="color:#e6db74">&#39;NJN&#39;</span>,
+         <span style="color:#e6db74">&#39;New Orleans Hornets&#39;</span>: <span style="color:#e6db74">&#39;NOH&#39;</span>,
+         <span style="color:#e6db74">&#39;New Orleans/Oklahoma City Hornets&#39;</span>: <span style="color:#e6db74">&#39;NOK&#39;</span>,
+         <span style="color:#e6db74">&#39;New Orleans Pelicans&#39;</span>: <span style="color:#e6db74">&#39;NOP&#39;</span>,
+         <span style="color:#e6db74">&#39;New York Knicks&#39;</span>: <span style="color:#e6db74">&#39;NYK&#39;</span>,
+         <span style="color:#e6db74">&#39;Oklahoma City Thunder&#39;</span>: <span style="color:#e6db74">&#39;OKC&#39;</span>,
+         <span style="color:#e6db74">&#39;Orlando Magic&#39;</span>: <span style="color:#e6db74">&#39;ORL&#39;</span>,
+         <span style="color:#e6db74">&#39;Philadelphia 76ers&#39;</span>: <span style="color:#e6db74">&#39;PHI&#39;</span>,
+         <span style="color:#e6db74">&#39;Phoenix Suns&#39;</span>: <span style="color:#e6db74">&#39;PHO&#39;</span>,
+         <span style="color:#e6db74">&#39;Portland Trail Blazers&#39;</span>: <span style="color:#e6db74">&#39;POR&#39;</span>,
+         <span style="color:#e6db74">&#39;Sacramento Kings&#39;</span>: <span style="color:#e6db74">&#39;SAC&#39;</span>,
+         <span style="color:#e6db74">&#39;San Antonio Spurs&#39;</span>: <span style="color:#e6db74">&#39;SAS&#39;</span>,
+         <span style="color:#e6db74">&#39;San Diego Clippers&#39;</span>: <span style="color:#e6db74">&#39;SDC&#39;</span>,
+         <span style="color:#e6db74">&#39;Seattle SuperSonics&#39;</span>: <span style="color:#e6db74">&#39;SEA&#39;</span>,
+         <span style="color:#e6db74">&#39;Toronto Raptors&#39;</span>: <span style="color:#e6db74">&#39;TOR&#39;</span>,
+         <span style="color:#e6db74">&#39;Utah Jazz&#39;</span>: <span style="color:#e6db74">&#39;UTA&#39;</span>,
+         <span style="color:#e6db74">&#39;Vancouver Grizzlies&#39;</span>: <span style="color:#e6db74">&#39;VAN&#39;</span>,
+         <span style="color:#e6db74">&#39;Washington Wizards&#39;</span>: <span style="color:#e6db74">&#39;WAS&#39;</span>,
+         <span style="color:#e6db74">&#39;Washington Bullets&#39;</span>: <span style="color:#e6db74">&#39;WSB&#39;</span>}
+</code></pre></div><p>Then, transform the <code>Team</code> column:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">transform_team_column</span>(x: str) <span style="color:#f92672">-&gt;</span> str:
+    <span style="color:#66d9ef">return</span> teams[x]
+
+standings_stats<span style="color:#f92672">.</span>Team <span style="color:#f92672">=</span> standings_stats<span style="color:#f92672">.</span>Team<span style="color:#f92672">.</span>apply(transform_team_column)
+</code></pre></div><p>There is still one remain thing regarding this issue. The Charlotte Hornets had their initial letters as <code>CHH</code> until the 2002 season. From 2003 through 2014, they used Charlotte Bobcats as their full name. Then they switched their full name back to Charlotte Hornets in the 2015 season, but their initial letters were changed to <code>CHO</code>. The previous dictionary has been prepared to deal with it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">maskChh <span style="color:#f92672">=</span> (standings_stats<span style="color:#f92672">.</span>Team <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;CHH/CHO&#39;</span>) <span style="color:#f92672">&amp;</span> (standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2002</span>)
+standings_stats<span style="color:#f92672">.</span>Team[maskChh] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;CHH&#39;</span>
+
+maskCho <span style="color:#f92672">=</span> (standings_stats<span style="color:#f92672">.</span>Team <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;CHH/CHO&#39;</span>) <span style="color:#f92672">&amp;</span> (standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">2015</span>)
+standings_stats<span style="color:#f92672">.</span>Team[maskCho] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;CHO&#39;</span>
+</code></pre></div><p>The other issue regards to the <code>basic_stats</code> and <code>advanced_stats</code> tables that contains a trailing asterisk on every player name that has retired or passed away, but the <code>mvp_award_voting</code> table does not. This causes the merging to skip this players on both sides, resulting in data loss. For example, Kobe Bryant, who won it in 2008 and has retired and passed away, not having him in the training dataset generates inconsistencies that needs to be solved:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">transform_player_column</span>(x: str) <span style="color:#f92672">-&gt;</span> str:
+    <span style="color:#66d9ef">return</span> x<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;*&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>)
+
+basic_stats<span style="color:#f92672">.</span>Player <span style="color:#f92672">=</span> basic_stats<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>apply(transform_player_column)
+advanced_stats<span style="color:#f92672">.</span>Player <span style="color:#f92672">=</span> advanced_stats<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>apply(transform_player_column)
+</code></pre></div><h3 id="training-vs-production">Training VS Production</h3>
+<p>Since the <code>mvp_award_voting</code> table was the only one that went until the 2020 season, just the others needs to be splitted:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">basic_stats_train <span style="color:#f92672">=</span> basic_stats[basic_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2020</span>]
+advanced_stats_train <span style="color:#f92672">=</span> advanced_stats[advanced_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2020</span>]
+standings_stats_train <span style="color:#f92672">=</span> standings_stats[standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2020</span>]
+
+basic_stats_production <span style="color:#f92672">=</span> basic_stats[basic_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">==</span> <span style="color:#ae81ff">2021</span>]
+advanced_stats_production <span style="color:#f92672">=</span> advanced_stats[advanced_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">==</span> <span style="color:#ae81ff">2021</span>]
+standings_stats_production <span style="color:#f92672">=</span> standings_stats[standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">==</span> <span style="color:#ae81ff">2021</span>]
+</code></pre></div><h3 id="datasets-and-indexes">Datasets and indexes</h3>
+<p>The <code>basic_stats</code> table will be the base for the datasets. Reviewing all the tables columns, the <code>advanced_stats</code> and the <code>mvp_award_voting</code> tables have the player name, the team name and the season just like the <code>basic_stats</code> table, which can be an unique index for all of them. Now, on to the <code>standings_stats</code> table, it has the team name and the season just like the others, which can be an unique index for all of them too:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> basic_stats_train<span style="color:#f92672">.</span>copy()
+
+df_train[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+df_train[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+
+advanced_stats_train[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> advanced_stats_train<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_train<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+mvp_award_voting[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> mvp_award_voting<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> mvp_award_voting<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> mvp_award_voting<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+standings_stats_train[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> standings_stats_train<span style="color:#f92672">.</span>Team<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> standings_stats_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+
+df_production <span style="color:#f92672">=</span> basic_stats_production<span style="color:#f92672">.</span>copy()
+
+df_production[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+df_production[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+
+advanced_stats_production[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> advanced_stats_production<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_production<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+standings_stats_production[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> standings_stats_production<span style="color:#f92672">.</span>Team<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> standings_stats_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+</code></pre></div><p>Then, merge the other tables into the datasets:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>merge(advanced_stats_train, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>merge(mvp_award_voting, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>merge(standings_stats_train, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+
+df_production <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>merge(advanced_stats_production, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+df_production <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>merge(standings_stats_production, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+</code></pre></div><h3 id="house-keeping">House keeping</h3>
+<p>By executing <code>df_train.info()</code> or <code>df_production.info()</code>, you will notice that there are a lot of duplicated columns. To remove the obvious ones:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>loc[:, <span style="color:#f92672">~</span>df_train<span style="color:#f92672">.</span>columns<span style="color:#f92672">.</span>duplicated()]
+
+df_production <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>loc[:, <span style="color:#f92672">~</span>df_production<span style="color:#f92672">.</span>columns<span style="color:#f92672">.</span>duplicated()]
+</code></pre></div><p>Executing again, you will still notice some duplicated columns dispite the decreased total. Why? Because while merging, if a column named <code>Example</code> exists on both sides, Pandas will rename the left side to <code>Example_x</code> and the right side to <code>Example_y</code>. To drop one of each one of them:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train<span style="color:#f92672">.</span>drop(columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xa0</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, <span style="color:#e6db74">&#39;TmSeason&#39;</span>, <span style="color:#e6db74">&#39;Player_y&#39;</span>, <span style="color:#e6db74">&#39;Pos_y&#39;</span>, <span style="color:#e6db74">&#39;Age_y&#39;</span>, <span style="color:#e6db74">&#39;Tm_y&#39;</span>, <span style="color:#e6db74">&#39;G_y&#39;</span>, <span style="color:#e6db74">&#39;MP_y&#39;</span>, <span style="color:#e6db74">&#39;Season_y&#39;</span>, <span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>,
+                         <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS_y&#39;</span>, <span style="color:#e6db74">&#39;TRB_y&#39;</span>, <span style="color:#e6db74">&#39;AST_y&#39;</span>, <span style="color:#e6db74">&#39;STL_y&#39;</span>, <span style="color:#e6db74">&#39;BLK_y&#39;</span>, <span style="color:#e6db74">&#39;FG%_y&#39;</span>, <span style="color:#e6db74">&#39;3P%_y&#39;</span>, <span style="color:#e6db74">&#39;FT%_y&#39;</span>, <span style="color:#e6db74">&#39;WS_y&#39;</span>, <span style="color:#e6db74">&#39;WS/48_y&#39;</span>, <span style="color:#e6db74">&#39;Team&#39;</span>],
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+
+df_production<span style="color:#f92672">.</span>drop(columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xa0</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, <span style="color:#e6db74">&#39;TmSeason&#39;</span>, <span style="color:#e6db74">&#39;Player_y&#39;</span>, <span style="color:#e6db74">&#39;Pos_y&#39;</span>, <span style="color:#e6db74">&#39;Age_y&#39;</span>, <span style="color:#e6db74">&#39;Tm_y&#39;</span>, <span style="color:#e6db74">&#39;G_y&#39;</span>, <span style="color:#e6db74">&#39;MP_y&#39;</span>, <span style="color:#e6db74">&#39;Season_y&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>],
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</code></pre></div><p>Then, rename all the ugly ones to have a better look:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train<span style="color:#f92672">.</span>rename(columns <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;Player_x&#39;</span>: <span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Pos_x&#39;</span>: <span style="color:#e6db74">&#39;Pos&#39;</span>, <span style="color:#e6db74">&#39;Age_x&#39;</span>: <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;Tm_x&#39;</span>: <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;G_x&#39;</span>: <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;MP_x&#39;</span>: <span style="color:#e6db74">&#39;MP&#39;</span>,
+                           <span style="color:#e6db74">&#39;FG%_x&#39;</span>: <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%_x&#39;</span>: <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%_x&#39;</span>: <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;TRB_x&#39;</span>: <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST_x&#39;</span>: <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL_x&#39;</span>: <span style="color:#e6db74">&#39;STL&#39;</span>,
+                           <span style="color:#e6db74">&#39;BLK_x&#39;</span>: <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;PTS_x&#39;</span>: <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;Season_x&#39;</span>: <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;WS_x&#39;</span>: <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48_x&#39;</span>: <span style="color:#e6db74">&#39;WS/48&#39;</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+
+df_production<span style="color:#f92672">.</span>rename(columns <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;Player_x&#39;</span>: <span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Pos_x&#39;</span>: <span style="color:#e6db74">&#39;Pos&#39;</span>, <span style="color:#e6db74">&#39;Age_x&#39;</span>: <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;Tm_x&#39;</span>: <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;G_x&#39;</span>: <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;MP_x&#39;</span>: <span style="color:#e6db74">&#39;MP&#39;</span>,
+                                <span style="color:#e6db74">&#39;FG%_x&#39;</span>: <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%_x&#39;</span>: <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%_x&#39;</span>: <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;TRB_x&#39;</span>: <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST_x&#39;</span>: <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL_x&#39;</span>: <span style="color:#e6db74">&#39;STL&#39;</span>,
+                                <span style="color:#e6db74">&#39;BLK_x&#39;</span>: <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;PTS_x&#39;</span>: <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;Season_x&#39;</span>: <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;WS_x&#39;</span>: <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48_x&#39;</span>: <span style="color:#e6db74">&#39;WS/48&#39;</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</code></pre></div><p>Moving on, all the empty values need to be filled with default ones. It happened because, for example, some player do not shoot three point baskets because of their playing style or position:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train<span style="color:#f92672">.</span>fillna({<span style="color:#e6db74">&#39;G&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;GS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;MP&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2P&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;2PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;eFG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;STL&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PF&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PER&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3PAr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;DRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;USG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;WS&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;WS/48&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;First&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Pts Won&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Pts Max&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Share&#39;</span>: <span style="color:#ae81ff">0</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+
+df_production<span style="color:#f92672">.</span>fillna({<span style="color:#e6db74">&#39;G&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;GS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;MP&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;2P&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;eFG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;TRB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;STL&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PF&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PER&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;3PAr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;USG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;WS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>: <span style="color:#ae81ff">0</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</code></pre></div><p>Finally, remove all the players where the Team is <code>TOT</code>. This happens when a player plays for multiple teams in a season. For example, if a player played for two teams, he will have three records for that season, one for each team, and one as a total, but which team did he finished the season? Within this source, it is unknown, so drop it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> df_train[df_train<span style="color:#f92672">.</span>Tm <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;TOT&#39;</span>]
+
+df_production <span style="color:#f92672">=</span> df_production[df_production<span style="color:#f92672">.</span>Tm <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;TOT&#39;</span>]
+</code></pre></div><h3 id="data-types">Data types</h3>
+<p>The datasets structure is complete, but to be useful to predict something, it needs all its types to be converted to the correct ones since Beautiful Soup works solely with strings:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">int_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;GS&#39;</span>, <span style="color:#e6db74">&#39;First&#39;</span>, <span style="color:#e6db74">&#39;Pts Won&#39;</span>, <span style="color:#e6db74">&#39;Pts Max&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>]
+percentage_float_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>, <span style="color:#e6db74">&#39;eFG%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>, <span style="color:#e6db74">&#39;3PAr&#39;</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Share&#39;</span>]
+float_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;FG&#39;</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>, <span style="color:#e6db74">&#39;3P&#39;</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>, <span style="color:#e6db74">&#39;2P&#39;</span>, <span style="color:#e6db74">&#39;2PA&#39;</span>, <span style="color:#e6db74">&#39;FT&#39;</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>, <span style="color:#e6db74">&#39;PF&#39;</span>,
+                 <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;PER&#39;</span>, <span style="color:#e6db74">&#39;ORB%&#39;</span>, <span style="color:#e6db74">&#39;DRB%&#39;</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>, <span style="color:#e6db74">&#39;USG%&#39;</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>, <span style="color:#e6db74">&#39;DWS&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>]
+
+<span style="color:#66d9ef">for</span> column <span style="color:#f92672">in</span> int_columns:
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;GS&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;First&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;Pts Won&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x[:<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>] <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#39;.&#39;</span> <span style="color:#f92672">in</span> x <span style="color:#66d9ef">else</span> x)
+    <span style="color:#66d9ef">else</span>:
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(int)
+
+    df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(int)
+
+<span style="color:#66d9ef">for</span> column <span style="color:#f92672">in</span> percentage_float_columns:
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Share&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0.0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#66d9ef">else</span> x)
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(float)
+    <span style="color:#66d9ef">else</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>zfill(<span style="color:#ae81ff">1</span>))
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>zfill(<span style="color:#ae81ff">1</span>))
+
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(float)
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(float)
+
+<span style="color:#66d9ef">for</span> column <span style="color:#f92672">in</span> float_columns:
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;MP&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;PER&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;USG%&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0.0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0.0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+
+    df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(float)
+    df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(float)
+</code></pre></div><p>Execute <code>df_train.info()</code> or <code>df_production.info()</code> one last time to assert that all the columns have their expected types.</p>
+<h3 id="exporting">Exporting</h3>
+<p>I will restrain myself to the Google Colab way here, since it is the one I used and recommend for this kind of stuff:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">drive<span style="color:#f92672">.</span>mount(<span style="color:#e6db74">&#39;drive&#39;</span>)
+
+df_train<span style="color:#f92672">.</span>to_csv(<span style="color:#e6db74">&#39;df_1980_2020.csv&#39;</span>, index <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+<span style="color:#960050;background-color:#1e0010">!</span>cp df_1980_2020<span style="color:#f92672">.</span>csv <span style="color:#e6db74">&#39;drive/My Drive/&#39;</span>
+
+df_production<span style="color:#f92672">.</span>to_csv(<span style="color:#e6db74">&#39;df_2021.csv&#39;</span>, index <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+<span style="color:#960050;background-color:#1e0010">!</span>cp df_2021<span style="color:#f92672">.</span>csv <span style="color:#e6db74">&#39;drive/My Drive/&#39;</span>
+</code></pre></div><p>Open your Google Drive and there they are, two datasets, one for training, another one for production.</p>
+<p><em><strong>P.S. you can check the GitHub repository <a href="https://github.com/devcbc/NBA-MVP-Award-Share-Scrap">here</a> or the Google Colab <a href="https://colab.research.google.com/drive/1vQjXcmJhJWxm1_d9h-mH_sehpgEF5L5Z?usp=sharing">here</a>.</strong></em></p>
+<p>Thanks for reading it!</p>
+]]></content>
+        </item>
+        
+    </channel>
+</rss>

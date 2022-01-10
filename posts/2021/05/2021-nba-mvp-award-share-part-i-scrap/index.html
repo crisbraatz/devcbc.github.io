@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="map[name:Cristopher Braatz Cardoso]">
+<meta name="description" content="2021 NBA MVP Award Share - Part I - Scrap." />
+<meta name="keywords" content="blog, dev, Beautiful Soup, Google Colab, Python, Scrap" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/" />
+
+
+    <title>
+        
+            2021 NBA MVP Award Share - Part I - Scrap :: Cristopher&#39;s dev blog
+        
+    </title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="https://devcbc.github.io/main.17863a81d979b637a02cd7632a4d86e9d80563ef460fd6af1a56962efcaa066b.css">
+
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="https://devcbc.github.io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://devcbc.github.io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://devcbc.github.io/favicon-16x16.png">
+    <link rel="manifest" href="https://devcbc.github.io/site.webmanifest">
+    <link rel="mask-icon" href="https://devcbc.github.io/safari-pinned-tab.svg" color="">
+    <link rel="shortcut icon" href="https://devcbc.github.io/favicon.ico">
+    <meta name="msapplication-TileColor" content="">
+    <meta name="theme-color" content="">
+
+
+
+<meta itemprop="name" content="2021 NBA MVP Award Share - Part I - Scrap">
+<meta itemprop="description" content="The idea I had a Data Science professor that once quote:
+ It is harder to mine the data then analyze it.
+ That quote stuck in my head and it led to this post that will show you the challenges while mining data!
+Since I am a huge NBA fan and there are tons of stats of its players, I had decided to built two datasets that enable us to predict the 2021 NBA MVP award share, which it is the highest individual accolade for a basketball player in a season."><meta itemprop="datePublished" content="2021-05-17T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-05-17T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2260"><meta itemprop="image" content="https://devcbc.github.io"/>
+<meta itemprop="keywords" content="Beautiful Soup,Google Colab,Python,Scrap," />
+<meta name="twitter:card" content="summary_large_image">
+
+<meta name="twitter:image" content="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/img/thumbnail-post.png">
+<meta name="twitter:title" content="2021 NBA MVP Award Share - Part I - Scrap">
+<meta name="twitter:description" content="2021 NBA MVP Award Share - Part I - Scrap.">
+
+
+
+
+
+    
+<meta property="og:title" content="2021 NBA MVP Award Share - Part I - Scrap">
+<meta property="og:description" content="2021 NBA MVP Award Share - Part I - Scrap.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/">
+<meta property="og:image" content="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/img/thumbnail-post.png">
+<meta property="article:published_time" content="2021-05-17">
+<meta property="article:modified_time" content="2021-05-17">
+
+
+
+
+
+    <meta property="article:section" content="Data Science" />
+
+
+
+    <meta property="article:published_time" content="2021-05-17 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+    </head>
+
+    
+        <body>
+    
+    
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="https://devcbc.github.io/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">&gt;</span>
+            <span class="logo__text">$ cd /home/</span>
+            <span class="logo__cursor" style=
+                  "
+                   
+                   ">
+            </span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="https://devcbc.github.io/posts/">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+  <main class="post">
+
+    <div class="post-info">
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        11 minutes
+
+        
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-i-scrap/">2021 NBA MVP Award Share - Part I - Scrap</a>
+      </h1>
+
+      
+
+      
+
+      
+
+      <div class="post-content">
+        <h2 id="the-idea">The idea</h2>
+<p>I had a Data Science professor that once quote:</p>
+<blockquote>
+<p>It is harder to mine the data then analyze it.</p>
+</blockquote>
+<p>That quote stuck in my head and it led to this post that will show you the challenges while mining data!</p>
+<p>Since I am a huge NBA fan and there are tons of stats of its players, I had decided to built two datasets that enable us to predict the <a href="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/">2021 NBA MVP award share</a>, which it is the highest individual accolade for a basketball player in a season.</p>
+<p>Like any other data science problem, we need to know its business to be able to get better data. For this task, we will extract 42 years of data from every single player that stepped on the court and their respective teams to build the datasets. We could go even further, but before the 80’s, there were some stats that were not tracked or even rules that were yet to be implemented, like three point baskets, but that is fine, our time span remains wide. <a href="https://www.basketball-reference.com">Basketball Reference</a> has a lot of great data waiting to be scraped, so in order to achieve our goal we need to scrap:</p>
+<ul>
+<li><a href="https://www.basketball-reference.com/leagues/NBA_2021_per_game.html">Players basic stats</a>, which includes points per game, rebounds, assists, steals, blocks and many more</li>
+<li><a href="https://www.basketball-reference.com/leagues/NBA_2021_advanced.html">Players advanced stats</a>, which includes player efficiency rating, true shooting, win shares and so on</li>
+<li><a href="https://www.basketball-reference.com/awards/awards_2020.html">Players MVP award voting</a>, where the gold is for the training dataset</li>
+<li><a href="https://www.basketball-reference.com/leagues/NBA_2021_standings.html">Teams standings</a>, which just the ranking, team name and the overall record are needed</li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<p>We will use:</p>
+<ul>
+<li>A <a href="https://colab.research.google.com">Google Colab</a> account</li>
+</ul>
+<p>But, if you prefer to do it locally, you will need:</p>
+<ul>
+<li><a href="https://www.python.org">Python</a></li>
+<li><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.html">Beautiful Soup</a></li>
+<li><a href="https://pandas.pydata.org">Pandas</a></li>
+<li>An IDE of your preference (I highly recommend <a href="https://jupyter.org">Jupyter</a>)</li>
+</ul>
+<h2 id="lets-get-to-work">Let&rsquo;s get to work</h2>
+<h3 id="basic-setup">Basic setup</h3>
+<p>First, create a code cell including all the libraries that are going to be used:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> bs4 <span style="color:#f92672">import</span> BeautifulSoup, Comment
+<span style="color:#f92672">from</span> urllib.request <span style="color:#f92672">import</span> urlopen
+<span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+<span style="color:#f92672">import</span> re
+<span style="color:#f92672">import</span> warnings
+warnings<span style="color:#f92672">.</span>filterwarnings(<span style="color:#e6db74">&#39;ignore&#39;</span>)
+<span style="color:#f92672">from</span> google.colab <span style="color:#f92672">import</span> drive <span style="color:#75715e"># Import only if you are using Google Colab</span>
+</code></pre></div><p>Then, another one including a list of seasons the scraps will cover:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">seasons <span style="color:#f92672">=</span> list(range(<span style="color:#ae81ff">1980</span>, <span style="color:#ae81ff">2022</span>))
+</code></pre></div><h3 id="scrap-time">Scrap time</h3>
+<h4 id="players-basic-stats">Players basic stats</h4>
+<p>It is the only table in the page and we need all the columns except the <code>Rk</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">basic_stats_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/leagues/NBA_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">_per_game.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][<span style="color:#ae81ff">1</span>:]
+
+    rows <span style="color:#f92672">=</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, class_ <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;thead&#39;</span>)[<span style="color:#ae81ff">1</span>:]
+    players_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;td&#39;</span>)] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(players_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    basic_stats_per_season<span style="color:#f92672">.</span>append(stats)
+
+basic_stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(basic_stats_per_season)
+</code></pre></div><p>Execute <code>basic_stats.tail()</code> to preview the table.</p>
+<p>The <code>Season</code> generated column is the only extra that will also be generated in all the following tables. It is the key for merging them all together.</p>
+<h4 id="players-advanced-stats">Players advanced stats</h4>
+<p>It goes like the previous one:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">advanced_stats_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/leagues/NBA_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">_advanced.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][<span style="color:#ae81ff">1</span>:]
+
+    rows <span style="color:#f92672">=</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, class_ <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;thead&#39;</span>)[<span style="color:#ae81ff">1</span>:]
+    players_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;td&#39;</span>)] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(players_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    advanced_stats_per_season<span style="color:#f92672">.</span>append(stats)
+
+advanced_stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(advanced_stats_per_season)
+</code></pre></div><p>Execute <code>advanced_stats.tail()</code> to preview the table.</p>
+<h4 id="players-mvp-award-voting">Players MVP award voting</h4>
+<p><em><strong>This. Is. The. Gold!</strong></em></p>
+<p>And also the only one that goes until the 2020 season and not the 2021 season, because it is only used for training:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">mvp_award_voting_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons[:<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/awards/awards_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][<span style="color:#ae81ff">1</span>:]
+
+    table <span style="color:#f92672">=</span> soup<span style="color:#f92672">.</span>find(<span style="color:#66d9ef">lambda</span> tag: tag<span style="color:#f92672">.</span>has_attr(<span style="color:#e6db74">&#39;id&#39;</span>) <span style="color:#f92672">and</span> tag[<span style="color:#e6db74">&#39;id&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;mvp&#39;</span>)
+    rows <span style="color:#f92672">=</span> table<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, class_ <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;thead&#39;</span>)[<span style="color:#ae81ff">1</span>:]
+    players_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;td&#39;</span>)] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(players_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    mvp_award_voting_per_season<span style="color:#f92672">.</span>append(stats)
+
+mvp_award_voting <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(mvp_award_voting_per_season)
+</code></pre></div><p>Execute <code>mvp_award_voting.tail()</code> to preview the table.</p>
+<h4 id="teams-standings">Teams standings</h4>
+<p>Just the <code>Rk</code>, <code>Team</code> and <code>Overall</code> columns of the <code>Expanded Standings</code> table in the page are needed:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">standings_per_season <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> season <span style="color:#f92672">in</span> seasons:
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.basketball-reference.com/leagues/NBA_</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">_standings.html&#39;</span><span style="color:#f92672">.</span>format(season)
+    html <span style="color:#f92672">=</span> urlopen(url)
+    soup <span style="color:#f92672">=</span> BeautifulSoup(html)
+
+    commented_html <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> comments <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>findAll(text <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> text:isinstance(text, Comment)):
+        commented_html<span style="color:#f92672">.</span>append(comments<span style="color:#f92672">.</span>extract())
+    commented_soup <span style="color:#f92672">=</span> BeautifulSoup(commented_html[<span style="color:#ae81ff">28</span>])
+
+    headers <span style="color:#f92672">=</span> [th<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> th <span style="color:#f92672">in</span> commented_soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>, limit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;th&#39;</span>)][:<span style="color:#ae81ff">3</span>]
+
+    rows <span style="color:#f92672">=</span> commented_soup<span style="color:#f92672">.</span>findAll(<span style="color:#e6db74">&#39;tr&#39;</span>)[<span style="color:#ae81ff">2</span>:]
+    teams_stats <span style="color:#f92672">=</span> [[td<span style="color:#f92672">.</span>getText() <span style="color:#66d9ef">for</span> td <span style="color:#f92672">in</span> rows[i]<span style="color:#f92672">.</span>findAll(<span style="color:#66d9ef">lambda</span> tag: tag<span style="color:#f92672">.</span>has_attr(<span style="color:#e6db74">&#39;data-stat&#39;</span>) <span style="color:#f92672">and</span> tag[<span style="color:#e6db74">&#39;data-stat&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;ranker&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;team_name&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;Overall&#39;</span>)][:<span style="color:#ae81ff">4</span>] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(rows))]
+    <span style="color:#66d9ef">for</span> team_stat <span style="color:#f92672">in</span> teams_stats:
+        team_stat<span style="color:#f92672">.</span>pop(<span style="color:#ae81ff">2</span>)
+
+    stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(teams_stats, columns <span style="color:#f92672">=</span> headers)
+    stats[<span style="color:#e6db74">&#39;Season&#39;</span>] <span style="color:#f92672">=</span> season
+
+    standings_per_season<span style="color:#f92672">.</span>append(stats)
+
+standings_stats <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(standings_per_season)
+</code></pre></div><p>Execute <code>standings_stats.tail()</code> to preview the table.</p>
+<h3 id="minor-tweaks">Minor tweaks</h3>
+<p>If you take a closer look at all the scraped tables, you will notice that there are two key issues that makes merging some of them together fail or result in data inconsistencies.</p>
+<p>First, the <code>standings_stats</code> table has the full name of the teams while all the others have the teams initial letters. This issue makes merging this table to others impossible since the to be created indexes will not match between them. To fix this, first, build a dictionary of full names / initial letters from the teams:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">teams <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;Atlanta Hawks&#39;</span>: <span style="color:#e6db74">&#39;ATL&#39;</span>,
+         <span style="color:#e6db74">&#39;Boston Celtics&#39;</span>: <span style="color:#e6db74">&#39;BOS&#39;</span>,
+         <span style="color:#e6db74">&#39;Brooklyn Nets&#39;</span>: <span style="color:#e6db74">&#39;BRK&#39;</span>,
+         <span style="color:#e6db74">&#39;Charlotte Bobcats&#39;</span>: <span style="color:#e6db74">&#39;CHA&#39;</span>,
+         <span style="color:#e6db74">&#39;Charlotte Hornets&#39;</span>: <span style="color:#e6db74">&#39;CHH/CHO&#39;</span>,
+         <span style="color:#e6db74">&#39;Chicago Bulls&#39;</span>: <span style="color:#e6db74">&#39;CHI&#39;</span>,
+         <span style="color:#e6db74">&#39;Cleveland Cavaliers&#39;</span>: <span style="color:#e6db74">&#39;CLE&#39;</span>,
+         <span style="color:#e6db74">&#39;Dallas Mavericks&#39;</span>: <span style="color:#e6db74">&#39;DAL&#39;</span>,
+         <span style="color:#e6db74">&#39;Denver Nuggets&#39;</span>: <span style="color:#e6db74">&#39;DEN&#39;</span>,
+         <span style="color:#e6db74">&#39;Detroit Pistons&#39;</span>: <span style="color:#e6db74">&#39;DET&#39;</span>,
+         <span style="color:#e6db74">&#39;Golden State Warriors&#39;</span>: <span style="color:#e6db74">&#39;GSW&#39;</span>,
+         <span style="color:#e6db74">&#39;Houston Rockets&#39;</span>: <span style="color:#e6db74">&#39;HOU&#39;</span>,
+         <span style="color:#e6db74">&#39;Indiana Pacers&#39;</span>: <span style="color:#e6db74">&#39;IND&#39;</span>,
+         <span style="color:#e6db74">&#39;Kansas City Kings&#39;</span>: <span style="color:#e6db74">&#39;KCK&#39;</span>,
+         <span style="color:#e6db74">&#39;Los Angeles Clippers&#39;</span>: <span style="color:#e6db74">&#39;LAC&#39;</span>,
+         <span style="color:#e6db74">&#39;Los Angeles Lakers&#39;</span>: <span style="color:#e6db74">&#39;LAL&#39;</span>,
+         <span style="color:#e6db74">&#39;Memphis Grizzlies&#39;</span>: <span style="color:#e6db74">&#39;MEM&#39;</span>,
+         <span style="color:#e6db74">&#39;Miami Heat&#39;</span>: <span style="color:#e6db74">&#39;MIA&#39;</span>,
+         <span style="color:#e6db74">&#39;Milwaukee Bucks&#39;</span>: <span style="color:#e6db74">&#39;MIL&#39;</span>,
+         <span style="color:#e6db74">&#39;Minnesota Timberwolves&#39;</span>: <span style="color:#e6db74">&#39;MIN&#39;</span>,
+         <span style="color:#e6db74">&#39;New Jersey Nets&#39;</span>: <span style="color:#e6db74">&#39;NJN&#39;</span>,
+         <span style="color:#e6db74">&#39;New Orleans Hornets&#39;</span>: <span style="color:#e6db74">&#39;NOH&#39;</span>,
+         <span style="color:#e6db74">&#39;New Orleans/Oklahoma City Hornets&#39;</span>: <span style="color:#e6db74">&#39;NOK&#39;</span>,
+         <span style="color:#e6db74">&#39;New Orleans Pelicans&#39;</span>: <span style="color:#e6db74">&#39;NOP&#39;</span>,
+         <span style="color:#e6db74">&#39;New York Knicks&#39;</span>: <span style="color:#e6db74">&#39;NYK&#39;</span>,
+         <span style="color:#e6db74">&#39;Oklahoma City Thunder&#39;</span>: <span style="color:#e6db74">&#39;OKC&#39;</span>,
+         <span style="color:#e6db74">&#39;Orlando Magic&#39;</span>: <span style="color:#e6db74">&#39;ORL&#39;</span>,
+         <span style="color:#e6db74">&#39;Philadelphia 76ers&#39;</span>: <span style="color:#e6db74">&#39;PHI&#39;</span>,
+         <span style="color:#e6db74">&#39;Phoenix Suns&#39;</span>: <span style="color:#e6db74">&#39;PHO&#39;</span>,
+         <span style="color:#e6db74">&#39;Portland Trail Blazers&#39;</span>: <span style="color:#e6db74">&#39;POR&#39;</span>,
+         <span style="color:#e6db74">&#39;Sacramento Kings&#39;</span>: <span style="color:#e6db74">&#39;SAC&#39;</span>,
+         <span style="color:#e6db74">&#39;San Antonio Spurs&#39;</span>: <span style="color:#e6db74">&#39;SAS&#39;</span>,
+         <span style="color:#e6db74">&#39;San Diego Clippers&#39;</span>: <span style="color:#e6db74">&#39;SDC&#39;</span>,
+         <span style="color:#e6db74">&#39;Seattle SuperSonics&#39;</span>: <span style="color:#e6db74">&#39;SEA&#39;</span>,
+         <span style="color:#e6db74">&#39;Toronto Raptors&#39;</span>: <span style="color:#e6db74">&#39;TOR&#39;</span>,
+         <span style="color:#e6db74">&#39;Utah Jazz&#39;</span>: <span style="color:#e6db74">&#39;UTA&#39;</span>,
+         <span style="color:#e6db74">&#39;Vancouver Grizzlies&#39;</span>: <span style="color:#e6db74">&#39;VAN&#39;</span>,
+         <span style="color:#e6db74">&#39;Washington Wizards&#39;</span>: <span style="color:#e6db74">&#39;WAS&#39;</span>,
+         <span style="color:#e6db74">&#39;Washington Bullets&#39;</span>: <span style="color:#e6db74">&#39;WSB&#39;</span>}
+</code></pre></div><p>Then, transform the <code>Team</code> column:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">transform_team_column</span>(x: str) <span style="color:#f92672">-&gt;</span> str:
+    <span style="color:#66d9ef">return</span> teams[x]
+
+standings_stats<span style="color:#f92672">.</span>Team <span style="color:#f92672">=</span> standings_stats<span style="color:#f92672">.</span>Team<span style="color:#f92672">.</span>apply(transform_team_column)
+</code></pre></div><p>There is still one remain thing regarding this issue. The Charlotte Hornets had their initial letters as <code>CHH</code> until the 2002 season. From 2003 through 2014, they used Charlotte Bobcats as their full name. Then they switched their full name back to Charlotte Hornets in the 2015 season, but their initial letters were changed to <code>CHO</code>. The previous dictionary has been prepared to deal with it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">maskChh <span style="color:#f92672">=</span> (standings_stats<span style="color:#f92672">.</span>Team <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;CHH/CHO&#39;</span>) <span style="color:#f92672">&amp;</span> (standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2002</span>)
+standings_stats<span style="color:#f92672">.</span>Team[maskChh] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;CHH&#39;</span>
+
+maskCho <span style="color:#f92672">=</span> (standings_stats<span style="color:#f92672">.</span>Team <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;CHH/CHO&#39;</span>) <span style="color:#f92672">&amp;</span> (standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">2015</span>)
+standings_stats<span style="color:#f92672">.</span>Team[maskCho] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;CHO&#39;</span>
+</code></pre></div><p>The other issue regards to the <code>basic_stats</code> and <code>advanced_stats</code> tables that contains a trailing asterisk on every player name that has retired or passed away, but the <code>mvp_award_voting</code> table does not. This causes the merging to skip this players on both sides, resulting in data loss. For example, Kobe Bryant, who won it in 2008 and has retired and passed away, not having him in the training dataset generates inconsistencies that needs to be solved:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">transform_player_column</span>(x: str) <span style="color:#f92672">-&gt;</span> str:
+    <span style="color:#66d9ef">return</span> x<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;*&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>)
+
+basic_stats<span style="color:#f92672">.</span>Player <span style="color:#f92672">=</span> basic_stats<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>apply(transform_player_column)
+advanced_stats<span style="color:#f92672">.</span>Player <span style="color:#f92672">=</span> advanced_stats<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>apply(transform_player_column)
+</code></pre></div><h3 id="training-vs-production">Training VS Production</h3>
+<p>Since the <code>mvp_award_voting</code> table was the only one that went until the 2020 season, just the others needs to be splitted:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">basic_stats_train <span style="color:#f92672">=</span> basic_stats[basic_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2020</span>]
+advanced_stats_train <span style="color:#f92672">=</span> advanced_stats[advanced_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2020</span>]
+standings_stats_train <span style="color:#f92672">=</span> standings_stats[standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">2020</span>]
+
+basic_stats_production <span style="color:#f92672">=</span> basic_stats[basic_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">==</span> <span style="color:#ae81ff">2021</span>]
+advanced_stats_production <span style="color:#f92672">=</span> advanced_stats[advanced_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">==</span> <span style="color:#ae81ff">2021</span>]
+standings_stats_production <span style="color:#f92672">=</span> standings_stats[standings_stats<span style="color:#f92672">.</span>Season <span style="color:#f92672">==</span> <span style="color:#ae81ff">2021</span>]
+</code></pre></div><h3 id="datasets-and-indexes">Datasets and indexes</h3>
+<p>The <code>basic_stats</code> table will be the base for the datasets. Reviewing all the tables columns, the <code>advanced_stats</code> and the <code>mvp_award_voting</code> tables have the player name, the team name and the season just like the <code>basic_stats</code> table, which can be an unique index for all of them. Now, on to the <code>standings_stats</code> table, it has the team name and the season just like the others, which can be an unique index for all of them too:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> basic_stats_train<span style="color:#f92672">.</span>copy()
+
+df_train[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+df_train[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+
+advanced_stats_train[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> advanced_stats_train<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_train<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+mvp_award_voting[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> mvp_award_voting<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> mvp_award_voting<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> mvp_award_voting<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+standings_stats_train[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> standings_stats_train<span style="color:#f92672">.</span>Team<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> standings_stats_train<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+
+df_production <span style="color:#f92672">=</span> basic_stats_production<span style="color:#f92672">.</span>copy()
+
+df_production[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+df_production[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> df_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+
+advanced_stats_production[<span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>] <span style="color:#f92672">=</span> advanced_stats_production<span style="color:#f92672">.</span>Player<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_production<span style="color:#f92672">.</span>Tm<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> advanced_stats_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+standings_stats_production[<span style="color:#e6db74">&#39;TmSeason&#39;</span>] <span style="color:#f92672">=</span> standings_stats_production<span style="color:#f92672">.</span>Team<span style="color:#f92672">.</span>map(str) <span style="color:#f92672">+</span> standings_stats_production<span style="color:#f92672">.</span>Season<span style="color:#f92672">.</span>map(str)
+</code></pre></div><p>Then, merge the other tables into the datasets:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>merge(advanced_stats_train, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>merge(mvp_award_voting, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>merge(standings_stats_train, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+
+df_production <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>merge(advanced_stats_production, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+df_production <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>merge(standings_stats_production, on <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TmSeason&#39;</span>, how <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;left&#39;</span>)
+</code></pre></div><h3 id="house-keeping">House keeping</h3>
+<p>By executing <code>df_train.info()</code> or <code>df_production.info()</code>, you will notice that there are a lot of duplicated columns. To remove the obvious ones:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> df_train<span style="color:#f92672">.</span>loc[:, <span style="color:#f92672">~</span>df_train<span style="color:#f92672">.</span>columns<span style="color:#f92672">.</span>duplicated()]
+
+df_production <span style="color:#f92672">=</span> df_production<span style="color:#f92672">.</span>loc[:, <span style="color:#f92672">~</span>df_production<span style="color:#f92672">.</span>columns<span style="color:#f92672">.</span>duplicated()]
+</code></pre></div><p>Executing again, you will still notice some duplicated columns dispite the decreased total. Why? Because while merging, if a column named <code>Example</code> exists on both sides, Pandas will rename the left side to <code>Example_x</code> and the right side to <code>Example_y</code>. To drop one of each one of them:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train<span style="color:#f92672">.</span>drop(columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xa0</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, <span style="color:#e6db74">&#39;TmSeason&#39;</span>, <span style="color:#e6db74">&#39;Player_y&#39;</span>, <span style="color:#e6db74">&#39;Pos_y&#39;</span>, <span style="color:#e6db74">&#39;Age_y&#39;</span>, <span style="color:#e6db74">&#39;Tm_y&#39;</span>, <span style="color:#e6db74">&#39;G_y&#39;</span>, <span style="color:#e6db74">&#39;MP_y&#39;</span>, <span style="color:#e6db74">&#39;Season_y&#39;</span>, <span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;Tm&#39;</span>,
+                         <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;PTS_y&#39;</span>, <span style="color:#e6db74">&#39;TRB_y&#39;</span>, <span style="color:#e6db74">&#39;AST_y&#39;</span>, <span style="color:#e6db74">&#39;STL_y&#39;</span>, <span style="color:#e6db74">&#39;BLK_y&#39;</span>, <span style="color:#e6db74">&#39;FG%_y&#39;</span>, <span style="color:#e6db74">&#39;3P%_y&#39;</span>, <span style="color:#e6db74">&#39;FT%_y&#39;</span>, <span style="color:#e6db74">&#39;WS_y&#39;</span>, <span style="color:#e6db74">&#39;WS/48_y&#39;</span>, <span style="color:#e6db74">&#39;Team&#39;</span>],
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+
+df_production<span style="color:#f92672">.</span>drop(columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xa0</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74">&#39;PlayerTmSeason&#39;</span>, <span style="color:#e6db74">&#39;TmSeason&#39;</span>, <span style="color:#e6db74">&#39;Player_y&#39;</span>, <span style="color:#e6db74">&#39;Pos_y&#39;</span>, <span style="color:#e6db74">&#39;Age_y&#39;</span>, <span style="color:#e6db74">&#39;Tm_y&#39;</span>, <span style="color:#e6db74">&#39;G_y&#39;</span>, <span style="color:#e6db74">&#39;MP_y&#39;</span>, <span style="color:#e6db74">&#39;Season_y&#39;</span>, <span style="color:#e6db74">&#39;Season&#39;</span>],
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</code></pre></div><p>Then, rename all the ugly ones to have a better look:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train<span style="color:#f92672">.</span>rename(columns <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;Player_x&#39;</span>: <span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Pos_x&#39;</span>: <span style="color:#e6db74">&#39;Pos&#39;</span>, <span style="color:#e6db74">&#39;Age_x&#39;</span>: <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;Tm_x&#39;</span>: <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;G_x&#39;</span>: <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;MP_x&#39;</span>: <span style="color:#e6db74">&#39;MP&#39;</span>,
+                           <span style="color:#e6db74">&#39;FG%_x&#39;</span>: <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%_x&#39;</span>: <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%_x&#39;</span>: <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;TRB_x&#39;</span>: <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST_x&#39;</span>: <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL_x&#39;</span>: <span style="color:#e6db74">&#39;STL&#39;</span>,
+                           <span style="color:#e6db74">&#39;BLK_x&#39;</span>: <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;PTS_x&#39;</span>: <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;Season_x&#39;</span>: <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;WS_x&#39;</span>: <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48_x&#39;</span>: <span style="color:#e6db74">&#39;WS/48&#39;</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+
+df_production<span style="color:#f92672">.</span>rename(columns <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;Player_x&#39;</span>: <span style="color:#e6db74">&#39;Player&#39;</span>, <span style="color:#e6db74">&#39;Pos_x&#39;</span>: <span style="color:#e6db74">&#39;Pos&#39;</span>, <span style="color:#e6db74">&#39;Age_x&#39;</span>: <span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;Tm_x&#39;</span>: <span style="color:#e6db74">&#39;Tm&#39;</span>, <span style="color:#e6db74">&#39;G_x&#39;</span>: <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;MP_x&#39;</span>: <span style="color:#e6db74">&#39;MP&#39;</span>,
+                                <span style="color:#e6db74">&#39;FG%_x&#39;</span>: <span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%_x&#39;</span>: <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;FT%_x&#39;</span>: <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;TRB_x&#39;</span>: <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST_x&#39;</span>: <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL_x&#39;</span>: <span style="color:#e6db74">&#39;STL&#39;</span>,
+                                <span style="color:#e6db74">&#39;BLK_x&#39;</span>: <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;PTS_x&#39;</span>: <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;Season_x&#39;</span>: <span style="color:#e6db74">&#39;Season&#39;</span>, <span style="color:#e6db74">&#39;WS_x&#39;</span>: <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;WS/48_x&#39;</span>: <span style="color:#e6db74">&#39;WS/48&#39;</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</code></pre></div><p>Moving on, all the empty values need to be filled with default ones. It happened because, for example, some player do not shoot three point baskets because of their playing style or position:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train<span style="color:#f92672">.</span>fillna({<span style="color:#e6db74">&#39;G&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;GS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;MP&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2P&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;2PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;eFG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;STL&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PF&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PER&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3PAr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;DRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;USG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;WS&#39;</span>: <span style="color:#ae81ff">0</span>,
+                 <span style="color:#e6db74">&#39;WS/48&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;First&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Pts Won&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Pts Max&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Share&#39;</span>: <span style="color:#ae81ff">0</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+
+df_production<span style="color:#f92672">.</span>fillna({<span style="color:#e6db74">&#39;G&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;GS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;MP&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;2P&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2PA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;eFG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;TRB&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;STL&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PF&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PTS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;PER&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;3PAr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;ORB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>: <span style="color:#ae81ff">0</span>,
+                      <span style="color:#e6db74">&#39;USG%&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DWS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;WS&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>: <span style="color:#ae81ff">0</span>},
+    inplace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</code></pre></div><p>Finally, remove all the players where the Team is <code>TOT</code>. This happens when a player plays for multiple teams in a season. For example, if a player played for two teams, he will have three records for that season, one for each team, and one as a total, but which team did he finished the season? Within this source, it is unknown, so drop it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_train <span style="color:#f92672">=</span> df_train[df_train<span style="color:#f92672">.</span>Tm <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;TOT&#39;</span>]
+
+df_production <span style="color:#f92672">=</span> df_production[df_production<span style="color:#f92672">.</span>Tm <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;TOT&#39;</span>]
+</code></pre></div><h3 id="data-types">Data types</h3>
+<p>The datasets structure is complete, but to be useful to predict something, it needs all its types to be converted to the correct ones since Beautiful Soup works solely with strings:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">int_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;Age&#39;</span>, <span style="color:#e6db74">&#39;G&#39;</span>, <span style="color:#e6db74">&#39;GS&#39;</span>, <span style="color:#e6db74">&#39;First&#39;</span>, <span style="color:#e6db74">&#39;Pts Won&#39;</span>, <span style="color:#e6db74">&#39;Pts Max&#39;</span>, <span style="color:#e6db74">&#39;Rk&#39;</span>]
+percentage_float_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;FG%&#39;</span>, <span style="color:#e6db74">&#39;3P%&#39;</span>, <span style="color:#e6db74">&#39;2P%&#39;</span>, <span style="color:#e6db74">&#39;eFG%&#39;</span>, <span style="color:#e6db74">&#39;FT%&#39;</span>, <span style="color:#e6db74">&#39;TS%&#39;</span>, <span style="color:#e6db74">&#39;3PAr&#39;</span>, <span style="color:#e6db74">&#39;FTr&#39;</span>, <span style="color:#e6db74">&#39;WS/48&#39;</span>, <span style="color:#e6db74">&#39;Share&#39;</span>]
+float_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;MP&#39;</span>, <span style="color:#e6db74">&#39;FG&#39;</span>, <span style="color:#e6db74">&#39;FGA&#39;</span>, <span style="color:#e6db74">&#39;3P&#39;</span>, <span style="color:#e6db74">&#39;3PA&#39;</span>, <span style="color:#e6db74">&#39;2P&#39;</span>, <span style="color:#e6db74">&#39;2PA&#39;</span>, <span style="color:#e6db74">&#39;FT&#39;</span>, <span style="color:#e6db74">&#39;FTA&#39;</span>, <span style="color:#e6db74">&#39;ORB&#39;</span>, <span style="color:#e6db74">&#39;DRB&#39;</span>, <span style="color:#e6db74">&#39;TRB&#39;</span>, <span style="color:#e6db74">&#39;AST&#39;</span>, <span style="color:#e6db74">&#39;STL&#39;</span>, <span style="color:#e6db74">&#39;BLK&#39;</span>, <span style="color:#e6db74">&#39;TOV&#39;</span>, <span style="color:#e6db74">&#39;PF&#39;</span>,
+                 <span style="color:#e6db74">&#39;PTS&#39;</span>, <span style="color:#e6db74">&#39;PER&#39;</span>, <span style="color:#e6db74">&#39;ORB%&#39;</span>, <span style="color:#e6db74">&#39;DRB%&#39;</span>, <span style="color:#e6db74">&#39;TRB%&#39;</span>, <span style="color:#e6db74">&#39;AST%&#39;</span>, <span style="color:#e6db74">&#39;STL%&#39;</span>, <span style="color:#e6db74">&#39;BLK%&#39;</span>, <span style="color:#e6db74">&#39;TOV%&#39;</span>, <span style="color:#e6db74">&#39;USG%&#39;</span>, <span style="color:#e6db74">&#39;OWS&#39;</span>, <span style="color:#e6db74">&#39;DWS&#39;</span>, <span style="color:#e6db74">&#39;WS&#39;</span>, <span style="color:#e6db74">&#39;OBPM&#39;</span>, <span style="color:#e6db74">&#39;DBPM&#39;</span>, <span style="color:#e6db74">&#39;BPM&#39;</span>, <span style="color:#e6db74">&#39;VORP&#39;</span>]
+
+<span style="color:#66d9ef">for</span> column <span style="color:#f92672">in</span> int_columns:
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;GS&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;First&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;Pts Won&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x[:<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>] <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#39;.&#39;</span> <span style="color:#f92672">in</span> x <span style="color:#66d9ef">else</span> x)
+    <span style="color:#66d9ef">else</span>:
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(int)
+
+    df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(int)
+
+<span style="color:#66d9ef">for</span> column <span style="color:#f92672">in</span> percentage_float_columns:
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Share&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0.0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#66d9ef">else</span> x)
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(float)
+    <span style="color:#66d9ef">else</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>zfill(<span style="color:#ae81ff">1</span>))
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>zfill(<span style="color:#ae81ff">1</span>))
+
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(float)
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(float)
+
+<span style="color:#66d9ef">for</span> column <span style="color:#f92672">in</span> float_columns:
+    <span style="color:#66d9ef">if</span> column <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;MP&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;PER&#39;</span> <span style="color:#f92672">or</span> <span style="color:#e6db74">&#39;USG%&#39;</span>:
+        df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0.0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+        df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(str)<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: <span style="color:#e6db74">&#39;0.0&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#66d9ef">else</span> x)
+
+    df_train[column] <span style="color:#f92672">=</span> df_train[column]<span style="color:#f92672">.</span>astype(float)
+    df_production[column] <span style="color:#f92672">=</span> df_production[column]<span style="color:#f92672">.</span>astype(float)
+</code></pre></div><p>Execute <code>df_train.info()</code> or <code>df_production.info()</code> one last time to assert that all the columns have their expected types.</p>
+<h3 id="exporting">Exporting</h3>
+<p>I will restrain myself to the Google Colab way here, since it is the one I used and recommend for this kind of stuff:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">drive<span style="color:#f92672">.</span>mount(<span style="color:#e6db74">&#39;drive&#39;</span>)
+
+df_train<span style="color:#f92672">.</span>to_csv(<span style="color:#e6db74">&#39;df_1980_2020.csv&#39;</span>, index <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+<span style="color:#960050;background-color:#1e0010">!</span>cp df_1980_2020<span style="color:#f92672">.</span>csv <span style="color:#e6db74">&#39;drive/My Drive/&#39;</span>
+
+df_production<span style="color:#f92672">.</span>to_csv(<span style="color:#e6db74">&#39;df_2021.csv&#39;</span>, index <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>)
+<span style="color:#960050;background-color:#1e0010">!</span>cp df_2021<span style="color:#f92672">.</span>csv <span style="color:#e6db74">&#39;drive/My Drive/&#39;</span>
+</code></pre></div><p>Open your Google Drive and there they are, two datasets, one for training, another one for production.</p>
+<p><em><strong>P.S. you can check the GitHub repository <a href="https://github.com/devcbc/NBA-MVP-Award-Share-Scrap">here</a> or the Google Colab <a href="https://colab.research.google.com/drive/1vQjXcmJhJWxm1_d9h-mH_sehpgEF5L5Z?usp=sharing">here</a>.</strong></em></p>
+<p>Thanks for reading it!</p>
+
+      </div>
+    </article>
+
+    <hr />
+
+    <div class="post-info">
+      
+    <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://devcbc.github.io/tags/beautiful-soup/">Beautiful Soup</a></span>
+        <span class="tag"><a href="https://devcbc.github.io/tags/google-colab/">Google Colab</a></span>
+        <span class="tag"><a href="https://devcbc.github.io/tags/python/">Python</a></span>
+        <span class="tag"><a href="https://devcbc.github.io/tags/scrap/">Scrap</a></span>
+        
+    </p>
+
+      
+    <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder meta-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+
+        <span class="tag"><a href="https://devcbc.github.io/categories/data-science/">Data Science</a></span>
+        
+    </p>
+
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        2260 Words
+      </p>
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        
+          2021-05-16 21:00
+        
+
+         
+          
+        
+      </p>
+    </div>
+      <hr />
+      <div class="sharing-buttons">
+        
+<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
+  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
+  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
+      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap&amp;caption=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap&amp;canonicalUrl=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
+  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
+    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="mailto:?subject=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap&amp;body=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
+  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f&amp;media=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f;description=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
+  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f&amp;title=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap&amp;summary=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap&amp;source=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
+  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f&amp;resubmit=true&amp;title=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
+  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f;title=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap" target="_blank" rel="noopener" aria-label="" title="Share on xing">
+  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="whatsapp://send?text=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap%20https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
+  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f&amp;t=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
+  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=2021%20NBA%20MVP%20Award%20Share%20-%20Part%20I%20-%20Scrap&amp;url=https%3a%2f%2fdevcbc.github.io%2fposts%2f2021%2f05%2f2021-nba-mvp-award-share-part-i-scrap%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
+  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </div>
+  </div>
+</a>
+
+      </div>
+
+    
+    <div class="pagination">
+        <div class="pagination__title">
+            <span class="pagination__title-h"></span>
+            <hr />
+        </div>
+
+        <div class="pagination__buttons">
+            
+            <span class="button previous">
+                <a href="https://devcbc.github.io/posts/2021/05/2021-nba-mvp-award-share-part-ii-machine-learning/">
+                    <span class="button__icon">←</span>
+                    <span class="button__text">2021 NBA MVP Award Share - Part II - Machine Learning</span>
+                </a>
+            </span>
+            
+
+            
+        </div>
+    </div>
+
+
+    
+
+    
+
+  </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2022</span>
+            
+            
+            
+            
+        </div>
+    </div>
+    
+    
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+        </div>
+    </div>
+    
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+<script type="text/javascript" src="https://devcbc.github.io/bundle.min.599099f1f14b78b657d524b28e10e0c5098e7cd46e9c7aed73d577068a276c3ff1bb234cbf29cb313333e83cf411727b43157c91ce5b809e2ffc81664614608e.js" integrity="sha512-WZCZ8fFLeLZX1SSyjhDgxQmOfNRunHrtc9V3BoonbD/xuyNMvynLMTMz6Dz0EXJ7QxV8kc5bgJ4v/IFmRhRgjg=="></script>
+
+
+
+    </body>
+</html>
